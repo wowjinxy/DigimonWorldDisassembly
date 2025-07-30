@@ -72,6 +72,7 @@
     <ClCompile Include="hooks.cpp" />
     <ClCompile Include="sub_004A1F8A.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="dllmain.cpp" />
     <!-- Compile the MinHook sources as part of this project. -->
     <ClCompile Include="..\third_party\minhook\src\buffer.c" />
     <ClCompile Include="..\third_party\minhook\src\hook.c" />
