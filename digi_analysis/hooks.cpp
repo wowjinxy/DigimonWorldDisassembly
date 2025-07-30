@@ -31,6 +31,17 @@ static OrigFunc401000 s_orig401000 = nullptr;
 using OrigFunc401020 = int16_t(__cdecl*)(int32_t);
 static OrigFunc401020 s_orig401020 = nullptr;
 
+// Type definitions for the original wrappers at 0x401040 and 0x401050.
+// These functions simply call the underlying sine lookup routines.  We
+// hook them separately so you can instrument calls to the wrappers
+// themselves without disturbing the underlying logic.  In a real
+// reconstruction you would replace these with more meaningful code
+// once the original behaviour is understood.
+using OrigFunc401040 = int16_t(__cdecl*)(int32_t);
+using OrigFunc401050 = int16_t(__cdecl*)(int32_t);
+static OrigFunc401040 s_orig401040 = nullptr;
+static OrigFunc401050 s_orig401050 = nullptr;
+
 // Type definition for the original function at 0x004A1F8A.  The exact
 // calling convention and parameters are not yet known, so we treat it
 // as a simple void function.  Adjust this signature once you know the
@@ -48,6 +59,17 @@ static int16_t __cdecl Detour401000(int32_t value) {
 // the return value here if desired.
 static int16_t __cdecl Detour401020(int32_t value) {
     return func_401020(value);
+}
+
+// Detours for the wrappers at 0x401040 and 0x401050.  These simply
+// call our reconstructed wrapper implementations.  Feel free to add
+// logging or additional behaviour here if desired.
+static int16_t __cdecl Detour401040(int32_t value) {
+    return func_401040(value);
+}
+
+static int16_t __cdecl Detour401050(int32_t value) {
+    return func_401050(value);
 }
 
 // Detour for 0x004A1F8A.  Calls our stub implementation and then
@@ -80,6 +102,9 @@ void InstallHooks() {
     // Create a hook for 0x401020 as well.  This allows you to intercept
     // calls to the second sine lookup routine.
     MH_CreateHook(reinterpret_cast<void*>(0x401020), reinterpret_cast<void*>(&Detour401020), reinterpret_cast<void**>(&s_orig401020));
+    // Create hooks for the simple wrapper functions at 0x401040 and 0x401050.
+    MH_CreateHook(reinterpret_cast<void*>(0x401040), reinterpret_cast<void*>(&Detour401040), reinterpret_cast<void**>(&s_orig401040));
+    MH_CreateHook(reinterpret_cast<void*>(0x401050), reinterpret_cast<void*>(&Detour401050), reinterpret_cast<void**>(&s_orig401050));
     // Create a hook for the new function at 0x004A1F8A.
     MH_CreateHook(reinterpret_cast<void*>(0x004A1F8A), reinterpret_cast<void*>(&Detour004A1F8A), reinterpret_cast<void**>(&s_orig004A1F8A));
     // Enable all hooks at once.  If needed you can enable/disable

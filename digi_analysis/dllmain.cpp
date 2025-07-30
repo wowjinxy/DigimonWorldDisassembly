@@ -105,6 +105,24 @@ extern "C" __declspec(dllexport) HRESULT WINAPI ValidateVertexShader(const DWORD
     return pValidateVertexShader(pShader, reserved, flag);
 }
 
+// The following linker directives force the exports to be named exactly as
+// expected by the game.  Without these directives, __stdcall functions
+// compiled with __declspec(dllexport) may be decorated (e.g. with
+// `@4` suffix) which prevents the loader from resolving the import.  These
+// directives map the undecorated export names to the corresponding
+// functions defined above.
+// Because these functions use the __stdcall (WINAPI) calling
+// convention, the compiler decorates their symbols as
+// _FunctionName@<bytes>.  To export them under their expected
+// undecorated names we specify the decorated name on the right-hand
+// side.  The numbers reflect the total size of the parameters: each
+// parameter is 4 bytes on x86.  See the Visual C++ documentation
+// for details.
+#pragma comment(linker, "/export:Direct3DCreate8=_Direct3DCreate8@4")
+#pragma comment(linker, "/export:DebugSetMute=_DebugSetMute@4")
+#pragma comment(linker, "/export:ValidatePixelShader=_ValidatePixelShader@12")
+#pragma comment(linker, "/export:ValidateVertexShader=_ValidateVertexShader@12")
+
 // DLL entry point.  On process attach we load the original DX8
 // library and resolve the address of Direct3DCreate8.  We also
 // initialise and enable our hooks.  On detach we disable hooks and
