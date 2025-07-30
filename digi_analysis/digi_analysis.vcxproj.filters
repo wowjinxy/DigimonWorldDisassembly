@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{E019380F-C45A-4282-8172-9E0F569BA1CE}</UniqueIdentifier>
+      <Extensions>cpp;cxx;c;cc</Extensions>
+    </Filter>
+    <Filter Include="Disassembly">
+      <UniqueIdentifier>{0B7FC4E5-65A2-4ECF-B627-5377E71BD975}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{A1FAD3D3-2D6E-47F2-929A-7703B3810F64}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{11111111-1111-1111-1111-111111111111}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hh</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="digi_disasm.asm">
+      <Filter>Disassembly</Filter>
+    </None>
+    <ClInclude Include="digi_bytes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="digi_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
