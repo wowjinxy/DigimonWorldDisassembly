@@ -39,30 +39,70 @@ static void ApplyNoCD() {
         }
     }
 }
-// Handle to the original DirectX 8 library.  We assume the original
-// has been renamed to dx8_orig.dll and resides alongside this DLL.
-static HMODULE g_dx8 = nullptr;
+// Handle to the original Direct3D 8 library.  We assume the original
+// has been renamed to D3D8_org.dll and resides alongside this DLL.  The
+// original name used by the game might differ (for example, some builds
+// include an extra "i" in the filename).  To avoid confusion and to
+// match the file included with this project, the proxy always attempts
+// to load "D3D8_org.dll".
+static HMODULE g_d3d8 = nullptr;
 
-// Typedef for the Direct3DCreate8 function.  This is the only export
-// we forward in this sample; additional exports can be added as
-// needed.
-// We avoid including d3d8.h by treating the return type as a raw
-// pointer.  The game will cast this to IDirect3D8* internally.  The
-// function pointer type therefore returns void* rather than the
-// DirectX interface pointer.
-using PFN_Direct3DCreate8 = void* (WINAPI*)(UINT);
-static PFN_Direct3DCreate8 pDirect3DCreate8 = nullptr;
+// Typedefs for the exports we forward.  We avoid including d3d8.h by
+// treating return types generically where possible.  The game will
+// cast these pointers to the appropriate COM interfaces internally.
+using PFN_Direct3DCreate8       = void*   (WINAPI*)(UINT);
+using PFN_DebugSetMute          = void    (WINAPI*)(DWORD);
+using PFN_ValidatePixelShader   = HRESULT (WINAPI*)(const DWORD*, DWORD*, BOOL);
+using PFN_ValidateVertexShader  = HRESULT (WINAPI*)(const DWORD*, DWORD*, BOOL);
+
+// Pointers to the original functions.  These are populated on
+// DLL_PROCESS_ATTACH and cleared on detach.  If any pointer is null
+// then the corresponding export will fail gracefully.
+static PFN_Direct3DCreate8      pDirect3DCreate8      = nullptr;
+static PFN_DebugSetMute         pDebugSetMute         = nullptr;
+static PFN_ValidatePixelShader  pValidatePixelShader  = nullptr;
+static PFN_ValidateVertexShader pValidateVertexShader = nullptr;
 
 // Export stub for Direct3DCreate8.  This function looks up the
 // original function pointer and calls through to it.  If the
 // original library fails to load the pointer will be null and the
 // call will fail gracefully.
+// Export stubs for the proxied functions.  Each stub simply calls
+// through to the corresponding function pointer if it is available.
+// If the original library could not be loaded or the function could
+// not be resolved, a sensible error code is returned and last-error
+// is updated accordingly.
+
 extern "C" __declspec(dllexport) void* WINAPI Direct3DCreate8(UINT sdkVersion) {
     if (!pDirect3DCreate8) {
         SetLastError(ERROR_MOD_NOT_FOUND);
         return nullptr;
     }
     return pDirect3DCreate8(sdkVersion);
+}
+
+extern "C" __declspec(dllexport) void WINAPI DebugSetMute(DWORD dwMute) {
+    if (!pDebugSetMute) {
+        SetLastError(ERROR_MOD_NOT_FOUND);
+        return;
+    }
+    pDebugSetMute(dwMute);
+}
+
+extern "C" __declspec(dllexport) HRESULT WINAPI ValidatePixelShader(const DWORD* pShader, DWORD* reserved, BOOL flag) {
+    if (!pValidatePixelShader) {
+        SetLastError(ERROR_MOD_NOT_FOUND);
+        return HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND);
+    }
+    return pValidatePixelShader(pShader, reserved, flag);
+}
+
+extern "C" __declspec(dllexport) HRESULT WINAPI ValidateVertexShader(const DWORD* pShader, DWORD* reserved, BOOL flag) {
+    if (!pValidateVertexShader) {
+        SetLastError(ERROR_MOD_NOT_FOUND);
+        return HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND);
+    }
+    return pValidateVertexShader(pShader, reserved, flag);
 }
 
 // DLL entry point.  On process attach we load the original DX8
@@ -72,12 +112,17 @@ extern "C" __declspec(dllexport) void* WINAPI Direct3DCreate8(UINT sdkVersion) {
 BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
     case DLL_PROCESS_ATTACH:
-        // Load the original DirectX 8 library.  If this fails the game
-        // may crash when calling Direct3DCreate8, so ensure that
-        // d3d8_orig.dll is present in the same directory as this DLL.
-        g_dx8 = LoadLibraryA("d3d8_orig.dll");
-        if (g_dx8) {
-            pDirect3DCreate8 = reinterpret_cast<PFN_Direct3DCreate8>(GetProcAddress(g_dx8, "Direct3DCreate8"));
+        // Load the original Direct3D 8 library.  Attempt to load
+        // "D3D8_org.dll" (matching the file supplied with this
+        // project).  If this fails, the export stubs will return
+        // ERROR_MOD_NOT_FOUND when called.  Windows file names are
+        // case‑insensitive, so the difference in case is irrelevant.
+        g_d3d8 = LoadLibraryA("D3D8_org.dll");
+        if (g_d3d8) {
+            pDirect3DCreate8      = reinterpret_cast<PFN_Direct3DCreate8>(GetProcAddress(g_d3d8, "Direct3DCreate8"));
+            pDebugSetMute         = reinterpret_cast<PFN_DebugSetMute>(GetProcAddress(g_d3d8, "DebugSetMute"));
+            pValidatePixelShader  = reinterpret_cast<PFN_ValidatePixelShader>(GetProcAddress(g_d3d8, "ValidatePixelShader"));
+            pValidateVertexShader = reinterpret_cast<PFN_ValidateVertexShader>(GetProcAddress(g_d3d8, "ValidateVertexShader"));
         }
         // Install our MinHook‑based detours.  If anything fails here
         // the hooks simply won't be active.
@@ -90,10 +135,15 @@ BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
         MH_DisableHook(MH_ALL_HOOKS);
         MH_Uninitialize();
         // Free the original library if it was loaded.
-        if (g_dx8) {
-            FreeLibrary(g_dx8);
-            g_dx8 = nullptr;
+        if (g_d3d8) {
+            FreeLibrary(g_d3d8);
+            g_d3d8 = nullptr;
         }
+        // Clear function pointers.
+        pDirect3DCreate8      = nullptr;
+        pDebugSetMute         = nullptr;
+        pValidatePixelShader  = nullptr;
+        pValidateVertexShader = nullptr;
         break;
     }
     return TRUE;
