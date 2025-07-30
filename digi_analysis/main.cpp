@@ -1,23 +1,36 @@
-// Entry point implementation for the reconstructed project.
-// This file defines WinMain rather than embedding the original executable bytes.
-// Instead of recreating the binary from data, we focus on compiling real code
-// extracted or reconstructed from digi.exe.  The small table lookup functions
-// live in functions.cpp and the extracted strings are available in strings.h.
+// Copyright (c) 2025
+//
+// Entry point implementation for the reconstructed project.  This file
+// defines WinMain rather than embedding the original executable bytes.
+// Instead of recreating the binary from data, we focus on compiling
+// real code extracted or reconstructed from digi.exe.  The small
+// table lookup functions live in functions.cpp and the extracted
+// strings are available in strings.cpp.
 
-#include <windows.h>
+#include <Windows.h>
+#include <cstdint>
+#include <cstddef>
 #include <string>
+
 #include "digi_table.h"
 #include "strings.h"
+#include "functions.h"
 
+// Forward declarations for the reconstructed functions.  These
+// declarations match those in functions.h but are repeated here to
+// maintain compatibility with existing source files if functions.h is
+// not included.
 extern "C" int16_t func_401000(int32_t);
 extern "C" int16_t func_401020(int32_t);
 extern "C" int16_t func_401040(int32_t);
 extern "C" int16_t func_401050(int32_t);
 
-// Simple helper to convert narrow to wide string.
+// Simple helper to convert a narrow UTF‑8 string to a wide UTF‑16
+// string.  Win32 functions expect UTF‑16 when dealing with wide
+// strings.
 static std::wstring ToWString(const std::string &s) {
     int n = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, NULL, 0);
-    std::wstring ws(n, L'\0');
+    std::wstring ws(static_cast<std::size_t>(n), L'\0');
     MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, &ws[0], n);
     return ws;
 }
@@ -41,12 +54,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     // Show the first few extracted strings in a message box to prove the strings
     // were correctly decoded.  We limit to a handful to avoid huge dialogs.
     message += "\nSample extracted strings:\n";
-    size_t sampleCount = (g_strings_count < 10) ? g_strings_count : 10;
-    for (size_t i = 0; i < sampleCount; ++i) {
-        // Convert each wide string to UTF-8 and then append.
+    std::size_t sampleCount = (g_strings_count < 10) ? g_strings_count : 10;
+    for (std::size_t i = 0; i < sampleCount; ++i) {
+        // Convert each wide string to UTF‑8 and then append.
         std::wstring ws(g_strings[i]);
         int len = WideCharToMultiByte(CP_UTF8, 0, ws.c_str(), -1, NULL, 0, NULL, NULL);
-        std::string utf8(len, '\0');
+        std::string utf8(static_cast<std::size_t>(len), '\0');
         WideCharToMultiByte(CP_UTF8, 0, ws.c_str(), -1, &utf8[0], len, NULL, NULL);
         // Remove the terminating null inserted by WideCharToMultiByte.
         if (!utf8.empty() && utf8.back() == '\0') utf8.pop_back();
