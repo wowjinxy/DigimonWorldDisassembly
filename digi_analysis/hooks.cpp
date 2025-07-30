@@ -12,8 +12,10 @@
 #include "functions.h"
 
 // Forward declaration of our stub for 0x004A1F8A.  Defined in
-// sub_004A1F8A.cpp.
-extern "C" void sub_004A1F8A();
+// sub_004A1F8A.cpp.  The calling convention is __stdcall to match
+// the declaration in the implementation.  Adjust this if analysis
+// reveals a different convention.
+extern "C" void __stdcall sub_004A1F8A();
 
 // Include MinHook.  The header is provided in third_party/minhook/include.
 #include "MinHook.h"
