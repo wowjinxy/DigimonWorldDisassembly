@@ -42,4 +42,9 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="sub_004A1F8A.asm">
+      <Filter>Disassembly</Filter>
+    </None>
+  </ItemGroup>
 </Project>
