@@ -1,22 +1,26 @@
 // Copyright (c) 2025
 //
-// Entry point implementation for the reconstructed project.  This file
+// Entry point implementation for the reconstructed project. This file
 // defines WinMain rather than embedding the original executable bytes.
 // Instead of recreating the binary from data, we focus on compiling
-// real code extracted or reconstructed from digi.exe.  The small
+// real code extracted or reconstructed from digi.exe. The small
 // table lookup functions live in functions.cpp and the extracted
-// strings are available in strings.cpp.
+// strings are available in strings.cpp. Additionally, we install
+// hooks using MinHook to redirect selected functions in the original
+// game to our C++ implementations.
 
-#include <Windows.h>
-#include <cstdint>
-#include <cstddef>
+#include <windows.h>
 #include <string>
+#include <vector>
+#include <cstdint>
+#include <cwchar>
 
 #include "digi_table.h"
 #include "strings.h"
 #include "functions.h"
+#include "hooks.h"
 
-// Forward declarations for the reconstructed functions.  These
+// Forward declarations for the reconstructed functions. These
 // declarations match those in functions.h but are repeated here to
 // maintain compatibility with existing source files if functions.h is
 // not included.
@@ -26,7 +30,7 @@ extern "C" int16_t func_401040(int32_t);
 extern "C" int16_t func_401050(int32_t);
 
 // Simple helper to convert a narrow UTF‑8 string to a wide UTF‑16
-// string.  Win32 functions expect UTF‑16 when dealing with wide
+// string. Win32 functions expect UTF‑16 when dealing with wide
 // strings.
 static std::wstring ToWString(const std::string &s) {
     int n = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, NULL, 0);
@@ -38,7 +42,11 @@ static std::wstring ToWString(const std::string &s) {
 // The WinMain entry point typical of Win32 GUI applications.
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow) {
-    // Demonstrate reconstructed functions.  We call each with a few test values.
+    // Install our hooks before doing anything else. In a DLL build
+    // this would typically be done from DllMain on process attach.
+    InstallHooks();
+
+    // Demonstrate reconstructed functions. We call each with a few test values.
     int inputs[] = {0, 1, 100, 4095, -1};
     std::string message;
     message += "Testing reconstructed functions:\n";
@@ -52,7 +60,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
 
     // Show the first few extracted strings in a message box to prove the strings
-    // were correctly decoded.  We limit to a handful to avoid huge dialogs.
+    // were correctly decoded. We limit to a handful to avoid huge dialogs.
     message += "\nSample extracted strings:\n";
     std::size_t sampleCount = (g_strings_count < 10) ? g_strings_count : 10;
     for (std::size_t i = 0; i < sampleCount; ++i) {

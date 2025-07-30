@@ -1,53 +1,72 @@
 // Copyright (c) 2025
 //
-// This file implements a very small hot‑patching framework.  It
-// demonstrates how to overwrite the beginning of a function in the
-// running process with a relative JMP to a reconstructed routine.  The
-// code uses Win32 APIs and works on 32‑bit Windows executables.  For
-// 64‑bit builds or more robust functionality, consider using a
-// dedicated hooking library such as MinHook.
+// Implementation of the hook infrastructure for the Digimon World
+// reconstruction. This version uses the MinHook library instead of
+// manually writing relative jumps. MinHook simplifies creation and
+// management of multiple hooks and preserves original function
+// pointers so you can call into the game as needed.
 
 #include "hooks.h"
-#include <Windows.h>
+#include <windows.h>
 #include <cstdint>
-#include <cstring>
 #include "functions.h"
 
-// Type definition for the original function at 0x401000.  When using
-// hot‑patching you can optionally store the original function pointer
-// before it is overwritten.  This allows you to call through to the
-// original behaviour if desired.  In this minimal example we do not
-// use the original pointer.
-using OrigFunc401000 = int16_t(__cdecl*)(int32_t);
-static OrigFunc401000 s_orig401000 = reinterpret_cast<OrigFunc401000>(0x401000);
+// Forward declaration of our stub for 0x004A1F8A. Defined in
+// sub_004A1F8A.cpp.
+extern "C" void sub_004A1F8A();
 
-// Replacement implementation that calls our reconstructed function.
+// Include MinHook. The header is provided in third_party/minhook/include.
+#include "MinHook.h"
+
+// Type definition for the original function at 0x401000. When using
+// MinHook we request the original pointer so we can call through if
+// desired.
+using OrigFunc401000 = int16_t(__cdecl*)(int32_t);
+static OrigFunc401000 s_orig401000 = nullptr;
+
+// Type definition for the original function at 0x004A1F8A. The exact
+// calling convention and parameters are not yet known, so we treat it
+// as a simple void function. Adjust this signature once you know the
+// correct prototype.
+using OrigFunc004A1F8A = void(*)();
+static OrigFunc004A1F8A s_orig004A1F8A = nullptr;
+
+// Detour for 0x401000. Simply calls our reconstructed function.
 static int16_t __cdecl Detour401000(int32_t value) {
     return func_401000(value);
 }
 
-// Helper to write a 5‑byte relative JMP to a target location.  On
-// x86 the JMP opcode is 0xE9 followed by a 32‑bit signed offset.
-static void WriteRelativeJump(void* target, void* destination) {
-    unsigned char patch[5];
-    patch[0] = 0xE9;
-    // Calculate the offset relative to the instruction following the JMP.
-    intptr_t offset = reinterpret_cast<intptr_t>(destination) -
-                      reinterpret_cast<intptr_t>(target) - 5;
-    std::memcpy(patch + 1, &offset, sizeof(int32_t));
-    DWORD oldProtect;
-    VirtualProtect(target, sizeof(patch), PAGE_EXECUTE_READWRITE, &oldProtect);
-    std::memcpy(target, patch, sizeof(patch));
-    VirtualProtect(target, sizeof(patch), oldProtect, &oldProtect);
+// Detour for 0x004A1F8A. Calls our stub implementation and then
+// optionally calls the original function. Remove the call to
+// s_orig004A1F8A() if you do not want to execute the original
+// behaviour.
+static void Detour004A1F8A() {
+    // Invoke our C++ implementation.
+    sub_004A1F8A();
+    // Forward to the original if available.
+    if (s_orig004A1F8A) {
+        s_orig004A1F8A();
+    }
 }
 
-// Installs the hooks for all reconstructed functions.  Additional
-// functions can be hooked by repeating the call to WriteRelativeJump
+// Installs the hooks for all reconstructed functions. Additional
+// functions can be hooked by repeating the call to MH_CreateHook
 // with the appropriate addresses.
 void InstallHooks() {
-    // Patch the function at 0x401000 to jump to our Detour401000.  If
-    // you reverse more functions, patch them here as well.  Addresses
-    // are relative to the base of the module; adjust if the module is
-    // relocated.
-    WriteRelativeJump(reinterpret_cast<void*>(0x401000), reinterpret_cast<void*>(&Detour401000));
+    // Initialise the hooking library. Ignore errors for repeated
+    // initialisation; MH_Initialize will return MH_ERROR_ALREADY_INITIALIZED
+    // in that case but the hooks can still be created.
+    MH_STATUS status = MH_Initialize();
+    if (status != MH_OK && status != MH_ERROR_ALREADY_INITIALIZED) {
+        return;
+    }
+    // Create a hook for 0x401000. On success the original pointer
+    // will be stored in s_orig401000.
+    MH_CreateHook(reinterpret_cast<void*>(0x401000), reinterpret_cast<void*>(&Detour401000), reinterpret_cast<void**>(&s_orig401000));
+    // Create a hook for the new function at 0x004A1F8A.
+    MH_CreateHook(reinterpret_cast<void*>(0x004A1F8A), reinterpret_cast<void*>(&Detour004A1F8A), reinterpret_cast<void**>(&s_orig004A1F8A));
+    // Enable all hooks at once. If needed you can enable/disable
+    // individual hooks by passing the target address instead of
+    // MH_ALL_HOOKS.
+    MH_EnableHook(MH_ALL_HOOKS);
 }

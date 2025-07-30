@@ -1,15 +1,15 @@
 // Copyright (c) 2025
 //
 // Declaration of the 4 KiB lookup table extracted from the original
-// digi.exe.  The definitions live in digi_table.cpp and contain
+// digi.exe. The definitions live in digi_table.cpp and contain
 // 4096 16‑bit signed integers.
 
 #pragma once
 
 #include <cstdint>
 
-// A 4096‑element table of 16‑bit values.  Each entry corresponds to
+// A 4096‑element table of 16‑bit values. Each entry corresponds to
 // precomputed sine values used by several routines early in the
-// Digimon World PC port.  The table is indexed after masking an
-// integer argument to 12 bits.  See functions.cpp for usage.
+// Digimon World PC port. The table is indexed after masking an
+// integer argument to 12 bits. See functions.cpp for usage.
 extern const int16_t g_table[4096];

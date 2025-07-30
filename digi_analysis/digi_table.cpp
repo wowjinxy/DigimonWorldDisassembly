@@ -1,15 +1,20 @@
 // Copyright (c) 2025
 //
 // Definition of the 4 KiB lookup table used by the reconstructed
-// functions.  In the original digimon.exe binary, this table
+// functions. In the original digimon.exe binary, this table
 // contained values produced from a sine curve and was used for
-// gameplay calculations.  To keep this repository lightweight, the
-// table below is currently initialised with zeroes.  Replace the
-// values with the data extracted from the game to match behaviour.
+// gameplay calculations. To keep this repository lightweight, the
+// table below contains the full sine wave values extracted from the
+// original project. Each entry is a 16‑bit signed integer.
 
 #include "digi_table.h"
 
-static const int16_t g_table[4096] = {
+// Note: this array is defined as a global constant so it can be
+// referenced from other translation units (see digi_table.h). In the
+// original project the array was declared static, which prevented
+// linking from functions.cpp. Removing the static qualifier fixes
+// that issue.
+const int16_t g_table[4096] = {
     0, 6, 12, 18, 25, 31, 37, 43, 50, 56, 62, 69, 75, 81, 87, 94,
     100, 106, 113, 119, 125, 131, 138, 144, 150, 157, 163, 169, 175, 182, 188, 194,
     200, 207, 213, 219, 226, 232, 238, 244, 251, 257, 263, 269, 276, 282, 288, 295,
@@ -265,5 +270,5 @@ static const int16_t g_table[4096] = {
     -401, -395, -388, -382, -376, -370, -363, -357, -351, -345, -338, -332, -326, -320, -313, -307,
     -301, -295, -288, -282, -276, -269, -263, -257, -251, -244, -238, -232, -226, -219, -213, -207,
     -200, -194, -188, -182, -175, -169, -163, -157, -150, -144, -138, -131, -125, -119, -113, -106,
-    -100, -94, -87, -81, -75, -69, -62, -56, -50, -43, -37, -31, -25, -18, -12, -6,
+    -100, -94, -87, -81, -75, -69, -62, -56, -50, -43, -37, -31, -25, -18, -12, -6
 };
