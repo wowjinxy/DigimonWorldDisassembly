@@ -47,63 +47,12 @@ static void ApplyNoCD() {
 // to load "D3D8_org.dll".
 static HMODULE g_d3d8 = nullptr;
 
-// Typedefs for the exports we forward.  We avoid including d3d8.h by
-// treating return types generically where possible.  The game will
-// cast these pointers to the appropriate COM interfaces internally.
-using PFN_Direct3DCreate8       = void*   (WINAPI*)(UINT);
-using PFN_DebugSetMute          = void    (WINAPI*)(DWORD);
-using PFN_ValidatePixelShader   = HRESULT (WINAPI*)(const DWORD*, DWORD*, BOOL);
-using PFN_ValidateVertexShader  = HRESULT (WINAPI*)(const DWORD*, DWORD*, BOOL);
-
-// Pointers to the original functions.  These are populated on
-// DLL_PROCESS_ATTACH and cleared on detach.  If any pointer is null
-// then the corresponding export will fail gracefully.
-static PFN_Direct3DCreate8      pDirect3DCreate8      = nullptr;
-static PFN_DebugSetMute         pDebugSetMute         = nullptr;
-static PFN_ValidatePixelShader  pValidatePixelShader  = nullptr;
-static PFN_ValidateVertexShader pValidateVertexShader = nullptr;
-
-// Export stub for Direct3DCreate8.  This function looks up the
-// original function pointer and calls through to it.  If the
-// original library fails to load the pointer will be null and the
-// call will fail gracefully.
-// Export stubs for the proxied functions.  Each stub simply calls
-// through to the corresponding function pointer if it is available.
-// If the original library could not be loaded or the function could
-// not be resolved, a sensible error code is returned and last-error
-// is updated accordingly.
-
-extern "C" __declspec(dllexport) void* WINAPI Direct3DCreate8(UINT sdkVersion) {
-    if (!pDirect3DCreate8) {
-        SetLastError(ERROR_MOD_NOT_FOUND);
-        return nullptr;
-    }
-    return pDirect3DCreate8(sdkVersion);
-}
-
-extern "C" __declspec(dllexport) void WINAPI DebugSetMute(DWORD dwMute) {
-    if (!pDebugSetMute) {
-        SetLastError(ERROR_MOD_NOT_FOUND);
-        return;
-    }
-    pDebugSetMute(dwMute);
-}
-
-extern "C" __declspec(dllexport) HRESULT WINAPI ValidatePixelShader(const DWORD* pShader, DWORD* reserved, BOOL flag) {
-    if (!pValidatePixelShader) {
-        SetLastError(ERROR_MOD_NOT_FOUND);
-        return HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND);
-    }
-    return pValidatePixelShader(pShader, reserved, flag);
-}
-
-extern "C" __declspec(dllexport) HRESULT WINAPI ValidateVertexShader(const DWORD* pShader, DWORD* reserved, BOOL flag) {
-    if (!pValidateVertexShader) {
-        SetLastError(ERROR_MOD_NOT_FOUND);
-        return HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND);
-    }
-    return pValidateVertexShader(pShader, reserved, flag);
-}
+// We no longer define function pointer types, global pointers or stub
+// implementations for the Direct3D 8 exports.  Instead we forward
+// these exports directly to the original D3D8_org.dll using linker
+// directives below.  The original library will provide the correct
+// calling conventions and parameter lists, avoiding stack imbalance
+// errors.
 
 // The following linker directives force the exports to be named exactly as
 // expected by the game.  Without these directives, __stdcall functions
@@ -118,10 +67,17 @@ extern "C" __declspec(dllexport) HRESULT WINAPI ValidateVertexShader(const DWORD
 // side.  The numbers reflect the total size of the parameters: each
 // parameter is 4 bytes on x86.  See the Visual C++ documentation
 // for details.
-#pragma comment(linker, "/export:Direct3DCreate8=_Direct3DCreate8@4")
-#pragma comment(linker, "/export:DebugSetMute=_DebugSetMute@4")
-#pragma comment(linker, "/export:ValidatePixelShader=_ValidatePixelShader@12")
-#pragma comment(linker, "/export:ValidateVertexShader=_ValidateVertexShader@12")
+// Forward the Direct3D 8 exports to the original D3D8_org.dll.  This
+// ensures that calls from the game use the correct calling
+// conventions and parameter lists without us having to re‑declare the
+// signatures.  The first part before the equals sign specifies the
+// export name from this DLL; the second part specifies the target
+// DLL and symbol.  Note that the target DLL name is case‑sensitive in
+// the directive but Windows treats file names case‑insensitively.
+#pragma comment(linker, "/export:Direct3DCreate8=D3D8_org.Direct3DCreate8")
+#pragma comment(linker, "/export:DebugSetMute=D3D8_org.DebugSetMute")
+#pragma comment(linker, "/export:ValidatePixelShader=D3D8_org.ValidatePixelShader")
+#pragma comment(linker, "/export:ValidateVertexShader=D3D8_org.ValidateVertexShader")
 
 // DLL entry point.  On process attach we load the original DX8
 // library and resolve the address of Direct3DCreate8.  We also
@@ -136,12 +92,9 @@ BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
         // ERROR_MOD_NOT_FOUND when called.  Windows file names are
         // case‑insensitive, so the difference in case is irrelevant.
         g_d3d8 = LoadLibraryA("D3D8_org.dll");
-        if (g_d3d8) {
-            pDirect3DCreate8      = reinterpret_cast<PFN_Direct3DCreate8>(GetProcAddress(g_d3d8, "Direct3DCreate8"));
-            pDebugSetMute         = reinterpret_cast<PFN_DebugSetMute>(GetProcAddress(g_d3d8, "DebugSetMute"));
-            pValidatePixelShader  = reinterpret_cast<PFN_ValidatePixelShader>(GetProcAddress(g_d3d8, "ValidatePixelShader"));
-            pValidateVertexShader = reinterpret_cast<PFN_ValidateVertexShader>(GetProcAddress(g_d3d8, "ValidateVertexShader"));
-        }
+        // We intentionally do not resolve any function pointers here.  All
+        // exported Direct3D 8 functions are forwarded directly to
+        // D3D8_org.dll via linker directives.
         // Install our MinHook‑based detours.  If anything fails here
         // the hooks simply won't be active.
         InstallHooks();
@@ -157,11 +110,8 @@ BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
             FreeLibrary(g_d3d8);
             g_d3d8 = nullptr;
         }
-        // Clear function pointers.
-        pDirect3DCreate8      = nullptr;
-        pDebugSetMute         = nullptr;
-        pValidatePixelShader  = nullptr;
-        pValidateVertexShader = nullptr;
+        // No function pointers to clear; exports are forwarded via the
+        // linker directives.
         break;
     }
     return TRUE;
