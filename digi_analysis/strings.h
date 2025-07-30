@@ -1,21 +1,21 @@
 // Copyright (c) 2025
 //
 // Declarations for the wide string table extracted from the Digimon
-// World PC executable. The definitions live in strings.cpp. The
+// World PC executable.  The definitions live in strings.cpp.  The
 // strings are stored as UTF‑16 (wchar_t) constants because the PC
-// port contains a mixture of Korean and high‑ASCII characters.
+// port contains a mixture of Korean and high‑ASCII characters【4574028794943†L2-L6】.
 
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 // Pointer to an array of wide C‑strings containing text extracted
-// directly from digi.exe. The actual definitions live in
-// strings.cpp. See README.md for more details on how these strings
-// were obtained.
+// directly from digi.exe.  The actual definitions live in
+// strings.cpp【4574028794943†L11-L14】.
 extern const wchar_t* g_strings[];
 
-// The number of entries in g_strings. You can compute this at build
+// The number of entries in g_strings.  You can compute this at build
 // time by taking sizeof(g_strings)/sizeof(g_strings[0]) in
-// strings.cpp.
+// strings.cpp【4574028794943†L17-L19】.
 extern const std::size_t g_strings_count;

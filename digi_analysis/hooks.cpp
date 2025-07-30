@@ -1,45 +1,59 @@
 // Copyright (c) 2025
 //
 // Implementation of the hook infrastructure for the Digimon World
-// reconstruction. This version uses the MinHook library instead of
-// manually writing relative jumps. MinHook simplifies creation and
+// reconstruction.  This version uses the MinHook library instead of
+// manually writing relative jumps.  MinHook simplifies creation and
 // management of multiple hooks and preserves original function
-// pointers so you can call into the game as needed.
+// pointers so you can call into the game as needed【328070431545145†L33-L70】.
 
 #include "hooks.h"
 #include <windows.h>
 #include <cstdint>
 #include "functions.h"
 
-// Forward declaration of our stub for 0x004A1F8A. Defined in
+// Forward declaration of our stub for 0x004A1F8A.  Defined in
 // sub_004A1F8A.cpp.
 extern "C" void sub_004A1F8A();
 
-// Include MinHook. The header is provided in third_party/minhook/include.
+// Include MinHook.  The header is provided in third_party/minhook/include.
 #include "MinHook.h"
 
-// Type definition for the original function at 0x401000. When using
+// Type definition for the original function at 0x401000.  When using
 // MinHook we request the original pointer so we can call through if
 // desired.
 using OrigFunc401000 = int16_t(__cdecl*)(int32_t);
 static OrigFunc401000 s_orig401000 = nullptr;
 
-// Type definition for the original function at 0x004A1F8A. The exact
+// Type definition for the original function at 0x401020.  This routine
+// adds 0x400 to its argument before indexing the sine table.  We hook
+// it separately so that we can log or adjust its behaviour without
+// affecting the wrappers.【559098899427678†L16-L18】
+using OrigFunc401020 = int16_t(__cdecl*)(int32_t);
+static OrigFunc401020 s_orig401020 = nullptr;
+
+// Type definition for the original function at 0x004A1F8A.  The exact
 // calling convention and parameters are not yet known, so we treat it
-// as a simple void function. Adjust this signature once you know the
-// correct prototype.
+// as a simple void function.  Adjust this signature once you know the
+// correct prototype【328070431545145†L24-L31】.
 using OrigFunc004A1F8A = void(*)();
 static OrigFunc004A1F8A s_orig004A1F8A = nullptr;
 
-// Detour for 0x401000. Simply calls our reconstructed function.
+// Detour for 0x401000.  Simply calls our reconstructed function.
 static int16_t __cdecl Detour401000(int32_t value) {
     return func_401000(value);
 }
 
-// Detour for 0x004A1F8A. Calls our stub implementation and then
-// optionally calls the original function. Remove the call to
+// Detour for 0x401020.  For now this simply forwards to our
+// reconstructed implementation.  You could insert logging or modify
+// the return value here if desired.
+static int16_t __cdecl Detour401020(int32_t value) {
+    return func_401020(value);
+}
+
+// Detour for 0x004A1F8A.  Calls our stub implementation and then
+// optionally calls the original function.  Remove the call to
 // s_orig004A1F8A() if you do not want to execute the original
-// behaviour.
+// behaviour【328070431545145†L38-L48】.
 static void Detour004A1F8A() {
     // Invoke our C++ implementation.
     sub_004A1F8A();
@@ -49,23 +63,26 @@ static void Detour004A1F8A() {
     }
 }
 
-// Installs the hooks for all reconstructed functions. Additional
+// Installs the hooks for all reconstructed functions.  Additional
 // functions can be hooked by repeating the call to MH_CreateHook
-// with the appropriate addresses.
+// with the appropriate addresses【328070431545145†L51-L69】.
 void InstallHooks() {
-    // Initialise the hooking library. Ignore errors for repeated
+    // Initialise the hooking library.  Ignore errors for repeated
     // initialisation; MH_Initialize will return MH_ERROR_ALREADY_INITIALIZED
     // in that case but the hooks can still be created.
     MH_STATUS status = MH_Initialize();
     if (status != MH_OK && status != MH_ERROR_ALREADY_INITIALIZED) {
         return;
     }
-    // Create a hook for 0x401000. On success the original pointer
+    // Create a hook for 0x401000.  On success the original pointer
     // will be stored in s_orig401000.
     MH_CreateHook(reinterpret_cast<void*>(0x401000), reinterpret_cast<void*>(&Detour401000), reinterpret_cast<void**>(&s_orig401000));
+    // Create a hook for 0x401020 as well.  This allows you to intercept
+    // calls to the second sine lookup routine.
+    MH_CreateHook(reinterpret_cast<void*>(0x401020), reinterpret_cast<void*>(&Detour401020), reinterpret_cast<void**>(&s_orig401020));
     // Create a hook for the new function at 0x004A1F8A.
     MH_CreateHook(reinterpret_cast<void*>(0x004A1F8A), reinterpret_cast<void*>(&Detour004A1F8A), reinterpret_cast<void**>(&s_orig004A1F8A));
-    // Enable all hooks at once. If needed you can enable/disable
+    // Enable all hooks at once.  If needed you can enable/disable
     // individual hooks by passing the target address instead of
     // MH_ALL_HOOKS.
     MH_EnableHook(MH_ALL_HOOKS);

@@ -1,4 +1,6 @@
-// Resource identifiers for digi_analysis
+// Resource definitions for the Digimon World reconstruction project.
+// This header is intentionally left mostly empty because the sample
+// code does not define any resources.  You can add icons, dialogs or
+// other resources here as needed by your application or DLL.
 
-#define IDI_MAIN_ICON 101
-#define IDB_MAIN_BITMAP 102
+#pragma once

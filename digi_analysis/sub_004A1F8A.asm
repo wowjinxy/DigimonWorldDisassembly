@@ -1,3 +1,9 @@
+; Disassembly of the routine at address 0x004A1F8A.  This file is
+; provided for reference only and is not assembled as part of the
+; project.  Use it to guide your reconstruction of the original
+; behaviour.  Once you understand what the assembly does you can
+; implement the logic in sub_004A1F8A.cpp using C++ or inline asm.
+
 sub_004A1F8Ah PROC
     push ebp
     mov ebp, esp

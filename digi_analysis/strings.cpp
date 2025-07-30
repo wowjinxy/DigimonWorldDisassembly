@@ -1,18 +1,18 @@
 // Copyright (c) 2025
 //
 // Definition of the extracted string table used by the reconstructed
-// Digimon World PC port. In the actual project the array below
+// Digimon World PC port.  In the actual project the array below
 // should contain every string extracted from the game binary, stored
-// as UTF‑16 (wchar_t) string literals. To keep this demonstration
-// lightweight, a subset of the original strings is provided. Replace
-// the contents with the full data set for accurate behaviour.
+// as UTF‑16 (wchar_t) string literals.  To keep this demonstration
+// lightweight, a subset of the original strings is provided.  Replace
+// the contents with the full data set for accurate behaviour【183865640345129†L0-L7】.
 
 #include "strings.h"
 
-// A sample array of strings extracted from the game. UTF‑16 literals
-// are prefixed with `L`. The full list in the original project
+// A sample array of strings extracted from the game.  UTF‑16 literals
+// are prefixed with `L`.  The full list in the original project
 // contained hundreds of entries; only the first few are included here
-// as an example.
+// as an example【183865640345129†L11-L14】.
 const wchar_t* g_strings[] = {
     L"낅Q맘?",
     L"D0>A",
@@ -65,6 +65,6 @@ const wchar_t* g_strings[] = {
     L"+TWNB13",
 };
 
-// Compute the number of strings at compile time. Using constexpr
-// ensures this value is known at build time and avoids mismatches.
+// Compute the number of strings at compile time.  Using constexpr
+// ensures this value is known at build time and avoids mismatches【183865640345129†L67-L69】.
 const std::size_t g_strings_count = sizeof(g_strings) / sizeof(g_strings[0]);

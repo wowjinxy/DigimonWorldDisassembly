@@ -1,9 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!--
-    This Visual Studio project file builds the reconstructed Digimon World
-    hooking DLL. It includes the MinHook sources from third_party/minhook
-    and compiles all of the C++ files in the digi_analysis folder.
--->
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -44,30 +39,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemGroup>
-    <ClInclude Include="functions.h" />
-    <ClInclude Include="digi_table.h" />
-    <ClInclude Include="strings.h" />
-    <ClInclude Include="hooks.h" />
-    <ClInclude Include="third_party/minhook/include/MinHook.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="functions.cpp" />
-    <ClCompile Include="digi_table.cpp" />
-    <ClCompile Include="strings.cpp" />
-    <ClCompile Include="hooks.cpp" />
-    <ClCompile Include="sub_004A1F8A.cpp" />
-    <ClCompile Include="main.cpp" />
-    <!-- MinHook C sources -->
-    <ClCompile Include="third_party/minhook/src/buffer.c" />
-    <ClCompile Include="third_party/minhook/src/hook.c" />
-    <ClCompile Include="third_party/minhook/src/trampoline.c" />
-    <ClCompile Include="third_party/minhook/src/hde/hde32.c" />
-  </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
+      <PrecompiledHeader />
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>third_party/minhook/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\third_party\minhook\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>Sync</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -76,17 +53,42 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
+      <PrecompiledHeader />
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;NDEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>third_party/minhook/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\third_party\minhook\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>Sync</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="functions.cpp" />
+    <ClCompile Include="digi_table.cpp" />
+    <ClCompile Include="strings.cpp" />
+    <ClCompile Include="hooks.cpp" />
+    <ClCompile Include="sub_004A1F8A.cpp" />
+    <ClCompile Include="main.cpp" />
+    <!-- Compile the MinHook sources as part of this project. -->
+    <ClCompile Include="..\third_party\minhook\src\buffer.c" />
+    <ClCompile Include="..\third_party\minhook\src\hook.c" />
+    <ClCompile Include="..\third_party\minhook\src\trampoline.c" />
+    <ClCompile Include="..\third_party\minhook\src\hde\hde32.c" />
+    <ClCompile Include="..\third_party\minhook\src\hde\hde64.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="functions.h" />
+    <ClInclude Include="digi_table.h" />
+    <ClInclude Include="strings.h" />
+    <ClInclude Include="hooks.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sub_004A1F8A.asm" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>
