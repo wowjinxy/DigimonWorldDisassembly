@@ -54,11 +54,20 @@
     <ClCompile Include="functions.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="digi_bytes.h" />
     <ClInclude Include="digi_table.h" />
+    <ClInclude Include="strings.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="digi_disasm.asm" />
+    <!-- Assemble the disassembly listing using MASM.  Visual Studio will use ml.exe to assemble it -->
+    <MASM Include="digi_disasm.asm">
+      <Assemble>true</Assemble>
+    </MASM>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="digi_analysis.rc">
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

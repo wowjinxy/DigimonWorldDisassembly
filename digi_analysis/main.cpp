@@ -1,56 +1,59 @@
-// This file provides a small harness around the embedded digi.exe binary.
-// The purpose of this program is two‑fold:  
-// 1. Demonstrate that the Visual Studio project builds successfully.  
-// 2. Provide a convenient way to reconstruct the original executable from its
-//    compiled bytes so that you can run or inspect it on Windows.  
+// Entry point implementation for the reconstructed project.
+// This file defines WinMain rather than embedding the original executable bytes.
+// Instead of recreating the binary from data, we focus on compiling real code
+// extracted or reconstructed from digi.exe.  The small table lookup functions
+// live in functions.cpp and the extracted strings are available in strings.h.
 
-#include <iostream>
-#include <fstream>
 #include <windows.h>
-#include "digi_bytes.h"
+#include <string>
+#include "digi_table.h"
+#include "strings.h"
 
-int main() {
-    // Inform the user about what this program does.
-    std::cout << "This Visual Studio project contains both a partial decompilation and the original binary data of digi.exe.\n";
-    std::cout << "\n";
-    std::cout << "A handful of small functions at the start of digi.exe have been hand‑translated into C (see functions.cpp).\n";
-    std::cout << "These functions use a table extracted from the executable's data section (digi_table.h).\n";
-    std::cout << "Below is a demo of calling those reconstructed functions.\n" << std::endl;
+extern "C" int16_t func_401000(int32_t);
+extern "C" int16_t func_401020(int32_t);
+extern "C" int16_t func_401040(int32_t);
+extern "C" int16_t func_401050(int32_t);
 
-    // Demonstrate the reconstructed functions with some test values.
-    extern int16_t func_401000(int32_t);
-    extern int16_t func_401020(int32_t);
-    extern int16_t func_401040(int32_t);
-    extern int16_t func_401050(int32_t);
+// Simple helper to convert narrow to wide string.
+static std::wstring ToWString(const std::string &s) {
+    int n = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, NULL, 0);
+    std::wstring ws(n, L'\0');
+    MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, &ws[0], n);
+    return ws;
+}
 
+// The WinMain entry point typical of Win32 GUI applications.
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+                   LPSTR lpCmdLine, int nCmdShow) {
+    // Demonstrate reconstructed functions.  We call each with a few test values.
     int inputs[] = {0, 1, 100, 4095, -1};
+    std::string message;
+    message += "Testing reconstructed functions:\n";
     for (int v : inputs) {
-        std::cout << "Input " << v << ": "
-                  << "f401000=" << func_401000(v) << ", "
-                  << "f401020=" << func_401020(v) << ", "
-                  << "f401040=" << func_401040(v) << ", "
-                  << "f401050=" << func_401050(v) << std::endl;
+        message += "Input " + std::to_string(v);
+        message += ": f401000=" + std::to_string(func_401000(v));
+        message += ", f401020=" + std::to_string(func_401020(v));
+        message += ", f401040=" + std::to_string(func_401040(v));
+        message += ", f401050=" + std::to_string(func_401050(v));
+        message += "\n";
     }
 
-    std::cout << "\n";
-    std::cout << "The original executable has also been embedded into digi_bytes.h as a static array.\n";
-    std::cout << "Would you like to write it back out to disk as digi_extracted.exe? (y/n): ";
-    char response = 'n';
-    std::cin >> response;
-    if (response == 'y' || response == 'Y') {
-        const char* outName = "digi_extracted.exe";
-        std::ofstream out(outName, std::ios::binary);
-        if (!out) {
-            std::cerr << "Failed to open output file: " << outName << std::endl;
-            return 1;
-        }
-        out.write(reinterpret_cast<const char*>(digi_exe), digi_exe_size);
-        out.close();
-        std::cout << "Extracted the original executable to " << outName << " (" << digi_exe_size << " bytes).\n";
-        std::cout << "You can run it manually if desired.\n";
-    } else {
-        std::cout << "Skipping extraction of the original binary.\n";
+    // Show the first few extracted strings in a message box to prove the strings
+    // were correctly decoded.  We limit to a handful to avoid huge dialogs.
+    message += "\nSample extracted strings:\n";
+    size_t sampleCount = (g_strings_count < 10) ? g_strings_count : 10;
+    for (size_t i = 0; i < sampleCount; ++i) {
+        // Convert each wide string to UTF-8 and then append.
+        std::wstring ws(g_strings[i]);
+        int len = WideCharToMultiByte(CP_UTF8, 0, ws.c_str(), -1, NULL, 0, NULL, NULL);
+        std::string utf8(len, '\0');
+        WideCharToMultiByte(CP_UTF8, 0, ws.c_str(), -1, &utf8[0], len, NULL, NULL);
+        // Remove the terminating null inserted by WideCharToMultiByte.
+        if (!utf8.empty() && utf8.back() == '\0') utf8.pop_back();
+        message += utf8 + "\n";
     }
 
+    std::wstring wmsg = ToWString(message);
+    MessageBoxW(NULL, wmsg.c_str(), L"Digi EXE Reconstruction Demo", MB_OK);
     return 0;
 }

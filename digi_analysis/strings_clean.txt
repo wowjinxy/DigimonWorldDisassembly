@@ -1,0 +1,1809 @@
+낅Q맘?
+D0>A
+ﾈ<g塹9
+UYVY
+YUY2
+DXT1
+DXT2
+DXT3
+DXT4
+DXT5
+AL16
+AR16
+¿d3d8d.dll
+DebugSetMute
+d3d8.dll
+F텘Ao뮲B!0
+풱oftware\Microsoft\Direct3D
+DisableMMX
+GenuineIntel
+DisableD3DXPSGP
+Application transferred too many scanlines
+Invalid SOS parameters for sequential JPEG
+Corrupt JPEG data: found marker 0x%02x instead of RST%d
+Premature end of JPEG file
+Warning: unknown JFIF revision number %d.%02d
+Corrupt JPEG data: bad Huffman code
+Corrupt JPEG data: premature end of data segment
+Corrupt JPEG data: %u extraneous bytes before marker 0x%02x
+Inconsistent progression sequence for component %d coefficient %d
+Unknown Adobe color transform code %d
+Obtained XMS handle %u
+Freed XMS handle %u
+Unrecognized component IDs %d %d %d, assuming YCbCr
+Opened temporary file %s
+Closed temporary file %s
+Ss=%d, Se=%d, Ah=%d, Al=%d
+Component %d: dc=%d ac=%d
+Start Of Scan: %d components
+Start of Image
+Component %d: %dhx%dv q=%d
+Start Of Frame 0x%02x: width=%u, height=%u, components=%d
+Smoothing not supported with nonstandard sampling ratios
+RST%d
+At marker 0x%02x, recovery action %d
+Selected %d colors for quantization
+Quantizing to %d colors
+Quantizing to %d = %d*%d*%d colors
+%4u %4u %4u %4u %4u %4u %4u %4u
+Unexpected marker 0x%02x
+Skipping marker 0x%02x, length %u
+with %d x %d thumbnail image
+Unknown JFIF minor revision number %d.%02d
+Warning: thumbnail image size does not match data length %u
+JFIF APP0 marker, density %dx%d  %d
+%3d %3d %3d %3d %3d %3d %3d %3d
+End Of Image
+Obtained EMS handle %u
+Freed EMS handle %u
+Define Restart Interval %u
+Define Quantization Table %d  precision %d
+Define Huffman Table 0x%02x
+Define Arithmetic Table 0x%02x: 0x%02x
+Unknown APP14 marker (not Adobe), length %u
+Unknown APP0 marker (not JFIF), length %u
+Adobe APP14 marker: version %d, flags 0x%04x 0x%04x, transform %d
+Caution: quantization tables are too coarse for baseline JPEG
+6a  7-Feb-96
+Copyright (C) 1996, Thomas G. Lane
+Write to XMS failed
+Read from XMS failed
+Image too wide for this implementation
+Virtual array controller messed up
+Unsupported marker type 0x%02x
+Application transferred too few scanlines
+Write failed on temporary file --- out of disk space?
+Seek failed on temporary file
+Read failed on temporary file
+Failed to create temporary file %s
+Invalid JPEG file structure: SOS before SOF
+Invalid JPEG file structure: two SOI markers
+Unsupported JPEG process: SOF type 0x%02x
+Invalid JPEG file structure: missing SOS marker
+Invalid JPEG file structure: two SOF markers
+Cannot quantize to more than %d colors
+Cannot quantize to fewer than %d colors
+Cannot quantize more than %d color components
+Insufficient memory (case %d)
+Not a JPEG file: starts with 0x%02x 0x%02x
+Quantization table 0x%02x was not defined
+JPEG datastream contains no image
+Huffman table 0x%02x was not defined
+Backing store not supported
+Requested feature was omitted at compile time
+Not implemented yet
+Invalid color quantization mode change
+Scan script does not transmit all data
+Cannot transcode due to multiple use of quantization table %d
+Premature end of input file
+Empty input file
+Maximum supported image dimension is %u pixels
+Missing Huffman code table entry
+Huffman code size table overflow
+Fractional sampling not implemented yet
+Output file write error --- out of disk space?
+Input file read error
+Didn't expect more than one scan
+Write to EMS failed
+Read from EMS failed
+Empty JPEG image (DNL not supported)
+Bogus DQT index %d
+Bogus DHT index %d
+Bogus DHT counts
+Bogus DAC value 0x%x
+Bogus DAC index %d
+Unsupported color conversion request
+Too many color components: %d, max %d
+CCIR601 sampling not implemented yet
+Suspension not allowed here
+Buffer passed to JPEG library is too small
+Bogus virtual array access
+JPEG parameter struct mismatch: library thinks size is %u, caller expects %u
+Improper call to JPEG library in state %d
+Invalid scan script at entry %d
+Bogus sampling factors
+Invalid progressive parameters at scan script entry %d
+Invalid progressive parameters Ss=%d Se=%d Ah=%d Al=%d
+Unsupported JPEG data precision %d
+Invalid memory pool code %d
+Sampling factors too large for interleaved scan
+Wrong JPEG library version: library is %d, caller expects %d
+Bogus marker length
+Bogus JPEG colorspace
+Bogus input colorspace
+IDCT output block size %d not supported
+Invalid component ID %d in SOS
+Bogus buffer control mode
+MAX_ALLOC_CHUNK is wrong, please fix
+ALIGN_TYPE is wrong, please fix
+Sorry, there are legal restrictions on arithmetic coding
+Bogus message code %d
+0123456789ABCDEF1.0.5
+IHDR
+IDAT
+IEND
+PLTE
+gAMA
+sRGB
+tRNS
+?蠱L?
+AuthenticAMD
+UnknownVendr
+need dictionary
+띐 n;^
+콋|o/
+j-=m
+\c厭Qkkbal
+聰鳴eP冗
+湲풃|댒廻
+앞藥晶|!賞
+落j쉅쫋뻍쯫셖쩯뷫
+incompatible version
+buffer error
+insufficient memory
+data error
+stream error
+file error
+stream end
+YZ|良똵
+Direct3DCreate8
+timeGetTime
+WINMM.dll
+DSOUND.dll
+MFC42.DLL
+__CxxFrameHandler
+fclose
+fread
+fseek
+fopen
+_ftol
+strstr
+_mbsrchr
+sprintf
+fwrite
+rand
+_mbscmp
+atoi
+fprintf
+printf
+_EH_prolog
+floor
+_CIacos
+_finite
+exit
+_CIasin
+MSVCRT.dll
+_except_handler3
+?terminate@@YAXXZ
+__dllonexit
+_onexit
+_exit
+_XcptFilter
+_acmdln
+__getmainargs
+_initterm
+__setusermatherr
+_adjust_fdiv
+__p__commode
+__p__fmode
+__set_app_type
+_controlfp
+GetDriveTypeA
+Sleep
+DeleteFileA
+MultiByteToWideChar
+WideCharToMultiByte
+LocalFree
+IsDBCSLeadByte
+LoadLibraryA
+GetProcAddress
+GetModuleHandleA
+GetVersionExA
+IsProcessorFeaturePresent
+GetStartupInfoA
+KERNEL32.dll
+IntersectRect
+UpdateWindow
+MessageBoxA
+PeekMessageA
+PostMessageA
+ShowWindow
+GetFocus
+GetAsyncKeyState
+RedrawWindow
+OffsetRect
+GetMessageA
+SetFocus
+DispatchMessageA
+TranslateMessage
+AdjustWindowRect
+ShowCursor
+CloseWindow
+CopyRect
+DrawTextA
+DrawTextW
+USER32.dll
+DeleteObject
+GetTextMetricsA
+CreateFontA
+CreateCompatibleDC
+GetTextExtentPoint32A
+GetObjectA
+CreateFontIndirectA
+DeleteDC
+SelectObject
+SetTextColor
+SetBkColor
+SetBkMode
+CreateDIBSection
+GDI32.dll
+RegCloseKey
+RegQueryValueExA
+RegOpenKeyA
+ADVAPI32.dll
+??1_Lockit@std@@QAE@XZ
+??0_Lockit@std@@QAE@XZ
+MSVCP60.dll
+CoInitialize
+CoUninitialize
+CoCreateInstance
+ole32.dll
+_setmbcp
+MAP\MAP%d\%s.MAP
+MAP\MAP%d\%s.TFS
+%s\%.2d_%.2d.bmp
+MAP\CMAP\MAP%d\%s
+%s\MASK%.2d.bmp
+MAP\MMAP\MAP%d\%s
+MAYO01
+MAYO02
+DMAYO03
+MAYO04A
+MAYO04B
+MAYO05
+MAYO06
+MAYO11
+MAYO10
+MAYO08A
+MAYO08B
+TROP00
+TROP01
+TROP02
+TROP03
+TROP04
+TROP05
+TROP06
+EMIHA00
+MIHA01
+MIHA02
+MIHA03
+MIHA04A
+MIHA04B
+TUNN01
+TUNN02
+TUNN03
+TUNN04
+TUNN05
+TUNN06
+TUNN07
+TUNN08
+TUNN09
+TUNN10
+DGHA01
+DGHA02
+GCAN01
+GCAN02
+GCAN03
+GCAN04
+GCAN05
+GCAN06
+GCAN07
+GCAN08_1
+GCAN09
+OGRE00
+OGRE01
+OGRE02
+OGRE03
+GCAN11
+YAKA02
+YAKA11A
+YAKA11B
+YAKA12
+YAKA13
+YAKA14
+YAKA15
+YAKA16
+YAKA17
+YAKA18
+YAKA22
+YAKA23
+YAKA24
+CHKA01
+SAIB01
+SAIB02
+GIAS00
+GIAS01
+GIAS02
+GIAS03
+GIAS04
+GIAS05
+GIAS06A
+GIAS07
+GIAS08
+GIAS09
+KODA00
+KODA01
+KODA02
+KODA03
+KODA04
+!KODA05
+!KODA06
+!KODA07
+!KODA08
+!FRZL01
+"FRZL02
+"FRZL03
+"FRZL04
+"FRZL05
+"FRZL06
+"FRZL07
+"FRZL08
+"FRZL12
+"ICSA01
+#ICSA02
+#ICSA03
+#ICSA04
+#ICSA05
+#ICSA06
+#ICSA07
+#ICSA08
+#BETL01
+:BETL02
+:BETL03
+:BETL04
+:MAYO00
+MAYO01_2
+MAYO02_2
+TRAI00
+$LEOM01
+%LEOM02
+%MIST01
+&MIST02
+&MIST03
+&MIST04
+&MIST05
+&MIST06
+&MIST07
+&TUNN07_2
+TUNN07_3
+TUNN08_2
+TUNN08_3
+TUNN03_2
+GCAN04_2
+'GCAN08_2
+'GCAN10
+'OGRE04
+GIAS06B
+FRZL13
+(FRZL14
+(FRZL15
+(FRZL16
+(FRZL17
+(FRZL18
+(STIC01
+)STIC02
+)GKYO01
+*GKYO02
+*OGRE10
+3OGRE11
+3OMOC01
+2OMOC02
+>OMOC03
+?OMOC04
+=OMOC05
+=OMOC06
+=OMOC07
+=OMOC08
+=FACT01
+4FACT02
+4FACT03
+4FACT04
+4FACT05
+4FACT06
+4FACT07
+4FACT08A
+4FACT08B
+4FACT09
+4FACT10
+4FACT11A
+9GOMI01
+8GOMI02
+8MGEN01
+;MGEN02
+;TWNA02
++TWNA03
++TWNA04
++TWNA05
++TWNA06
++TWNA07
++TWNA08
++TWNA09
++TWNA10
++TWNA11
++TWNA12
++TWNA13
++TWNB01
++TWNB02
++TWNB03
++TWNB04
++TWNB05
++TWNB06
++TWNB07
++TWNB08
++TWNB09
++TWNB10
++TWNB11
++TWNB12
++TWNB13
++TWNB14
++TWNB15
++TWNB16
++TWNB17
++TWNB18
++TWNB19
++TWNB20
++TWNB21
++TWNB22
++TWNB23
++TWNB24
++TWNA01
++ROOM10
+0ROOM11
+0ROOM12
+5ROOM13
+6ROOM14
+7MGEN03
+;ROOM02
+,MGEN04
+;ROOM04
+-ROOM05A
+.ROOM05B
+.ROOM06
+/ROOM07
+1ROOM08
+0MGEN05
+;FACT11B
+9SAIB03
+MGEN98
+;ROOM19
+6YAKA26
+MGEN99
+;MGEN11
+CMGEN12
+CMGEN13
+CMGEN14
+;MGEN15
+;MGEN16
+;YAKA25
+MIHA05
+MIHA06
+ROOM20
+<TEND01
++TEND02
++TOPN01
+MGEN06
+;MGEN07
+;MGEN08
+MGEN09
+;MGEN10
+선택의 숲
+꿈틀몬의 보금자리
+암흑 귀족의 저택 지하
+암흑 귀족의 저택 천정 위
+암흑 귀족의 저택 2층
+로봇 하우스
+인형 하우스
+장난감 저택
+디지몬 컬링장
+무한마운틴
+비트랜드
+쓰레기 산
+보물 찾기 집
+투기장 로비
+버드라 운송
+팩토리얼 타운
+비밀의 해안 동굴
+장난감 거리
+비밀 아이템 상점
+할배몬의 집
+아이템 상점
+레스토랑
+캔터스 의원
+아이템 보관소
+시작의 마을
+다이온 촌
+개골개골 습지
+그레이트 캐넌
+레오몬 선조의 동굴
+그린 짐
+아이스 생츄어리
+프리즈 랜드
+고대의 땅 다이노 - 시간이 빠르게 가는 지역
+고대의 땅 다이노 - 시간이 느리게 가는 지역
+고대의 땅 다이노 입구
+기어 사반나
+지하 실험장
+암흑귀족의 저택 지하
+암흑귀족의 저택
+모노크로 상점
+우가몬 요새
+그레이트 캐넌 하층
+요새 입구
+그레 대교
+그레이트 캐넌 상층
+그레이트 캐넌 입구
+오버델 묘지
+용암동굴
+두리몬의 숙소
+드릴터널 지하 3층
+드릴터널 지하 2층
+드릴터널
+전망대산 포자지역
+전망대산기슭
+시작의 마을 입구
+전망대산 산길
+망그로브 지역
+트로피칼 정글
+디지브릿지
+드릴터널 입구
+용의눈 호숫가
+실러컨 해안
+헤매지 않는 숲
+대회 스케줄
+디지몬 시디를 찾을 수 없습니다
+Local AppWizard-Generated Applications
+시디에러
+이름 입력
+일려나 카나 히데카즈 돌아오는 종료
+너의 이름
+디지몬의 이름
+파피푸페포
+바비부베보
+다지두데도
+자지주제조
+가기구게고
+라릴레로
+마밈메모
+하히후헤호
+나니누네노
+타치츠테토
+사시스세소
+카키쿠케코
+っゃゅょ
+ぁぃぅぇぉ
+ぱぴぷぺぽ
+마미 부 가 ぼ
+이다ぢづ로 정도
+자리 치질 그림 자
+가 도리 속げ
+들 유리 るれ 로
+눈매 무 눈도
+는 피부에 걸음
+무엇ぬ 네노
+칼 연줄과
+구더기 스세 그것
+나 묻는 けこ
+아이우에오
+%sSOUND\sb.whb
+%c:\
+.wav
+.rmi
+.mid
+ETCNA\UNTI.TMD
+Press Start Button
+ETCNA\title256.tim
+movie\op1.wmv
+%s-%s
+No Data
+SAVE\%d.sav
+게  임  저  장
+취  소
+초기화면으로 돌아가시겠습니까?
+저장하시겠습니까?
+Save화일을 덮어 쓰시겠습니까?
+초기화면으로 가시겠습니까?
+초  기  화  면
+저  장  하  기
+%d FPS, MAPID : %d, MAPHEADID : %d  evoTime : %d scrX : %d, scrY : %d
+Slot %d
+movie\op2.wmv
+ETCNA\title2.tim
+%d FPS, MAPID : %d
+CARD\CARD.ALL
+ETCDAT\SLOT.TIM
+ETCDAT\ETCTIM.BIN
+Back
+Name
+%sSOUND\BGM\FAALL_%.3d.sgt
+삭제할 Slot선택
+저장된 게임 선택
+저장할 Slot선택
+게 임 종 료
+이 어 서 하 기
+처 음 부 터 하 기
+LTJLSP2002
+CDWWnd
+현재 그래픽 카드의 호환성이 디지몬을 실행하기에 부적합 합니다.
+최신 그래픽 드라이버를 다시 설치하여 주신다음, 디지몬을 다시 실행하시기 바랍니다.
+DirectX 에러
+CHDAT\MMD%d\%s.MMD
+그레이몬
++,.-*)
+에어드라몬
+티라노몬
+시드라몬
+메탈그레이몬
++,.-/(*)
+캅테리몬
+버드라몬
+프리지몬
+%&'$ "
+스컬그레이몬
++0.-/(*)
+메탈콩알몬
+베이더몬
++,/*
+켄터스몬
+안드로몬
+.-/(
+%$ "
+모노크로몬
+실러컨몬
+메가드라몬
+%&'#!$ "
+디지타몬
+Ｈ캅테리몬
+.-/)%&'#!$ "]ÿ
+메가시드라몬
+웨아갈루몬
+화이트레오몬
+기가드라몬
+메탈에테몬
+왕잠자리몬
+화염리자몬
+배드퍼펫몬
+2./)
+스노우아구몬
+블루우가몬
+화이트스카몬
+독꿈틀몬
+얼룩유니몬
+레드베지몬
+J모털몬
+수염두리몬
+고부리몬
+머드프리지몬
+사이케몬
+투베타몬
+토이아구몬
+오로라몬
+헬로우워메몬
+버미리몬
+그린쉘몬
+가드로몬
+레드펭귄몬
+아이스몬
+레드꼬끼몬
+츄카이몬
+원시고부리몬
+쿠리아아구몬
+그린베지몬
+아이스데블몬
+다크리자몬
+왕모래잠자리몬
+스노우고부리몬
+블루메라몬
+세이버드라몬
+데블시드라몬
+파워드라몬
+아날로그맨
+마켓가게 주인
+왕개굴몬
+스카몬 대왕
+쥬레이몬
+생철（blik） 인형
+티라노 선생
+브라키몬
+페티메라몬
+d.*)
+d0./*
+d,/*
+묘티스몬
+CEMG
+CEGR
+EVAN
+EPEN
+EIGA
+EDIG
+EPIC
+EMGD
+ENAN
+EMOJ
+EKUW
+ECOC
+ESIR
+ELEO
+EMNO
+EPAL
+EPIY
+EETE
+EGIR
+EAND
+ESCU
+EDOR
+EBAK
+ECEN
+ESHE
+EOGR
+EUNI
+EKUN
+EPAT
+EVED
+EMTM
+ESKU
+EVEG
+EHOE
+EYUK
+EGAR
+EBIR
+EANG
+EKAB
+EELE
+EGAB
+EMON
+EMAM
+EMTG
+ENUM
+ESEA
+EMER
+ETYR
+EAIR
+EDEV
+EGRE
+EBET
+PUTI
+BRAK
+EGOB
+TIRS
+BRIK
+HAGU
+JURE
+SCUD
+TONO
+TENS
+JIJI
+ANLG
+MUGE
+tAKA
+INSE
+WRSE
+TENT
+GECO
+OTAM
+GOLE
+SOUL
+SABD
+GRUR
+BLMR
+SNGB
+SNDY
+DKRZ
+ICDV
+ZASS
+CLEA
+SHAM
+TUKA
+AKAT
+ICEM
+MCHO
+GARD
+MRIS
+TKKA
+FUGA
+VARM
+GERE
+ARUR
+PIDD
+TOYA
+MODO
+PSYC
+TUTI
+GOBR
+NISE
+JMOJ
+REDV
+TANK
+SIMA
+DOKU
+PCSC
+HYOG
+YKAG
+WARU
+FLAR
+GOTU
+YANM
+VAND
+MTET
+GGDR
+PANJ
+wEAG
+MGSD
+HKAB
+HOUO
+IGAM
+PENM
+DIGI
+PICC
+MGDR
+NANI
+MOJA
+KUWA
+COCA
+SIRA
+LEOM
+MONO
+PALM
+PIYO
+TANE
+YURA
+ETEM
+GIRO
+ANDR
+SCUM
+DORI
+BAKE
+CENT
+SHEL
+OGRE
+UNIM
+KUNE
+PATA
+TOKO
+POYO
+VEDA
+MTMA
+SKUL
+VEGI
+HOEE
+YUKI
+GARU
+BIRD
+ANGE
+KABU
+ELEC
+GABU
+TUNO
+PUNI
+MONZ
+MAME
+MTGR
+NUME
+SEAD
+MERA
+TYRA
+AIRD
+DEVI
+GREY
+BETA
+AGUM
+KORO
+BOTA
+BOYS
+CHDAT\ALLTIM.TIM
+%s을 읽을 수 없습니다.
+!"#$%&
+'()*+,-./01234567
+*0&89:;<
+=>?"@A
+$3:,
+BCDE:F0
+!"#$%&'()*+,-./012438
+SOUND\sl.whb
+SOUND\ss.whb
+SOUND\VLALL\VLALL-%d.WHB
+SOUND\VBALL\VBALL-%d.WHB
+SOUND\SB.WHB
+%*!4
+%,<4
+%)<4
+0:!4
+.-04
+STDDAT\DRAW.TMD
+STDDAT\B_TOGI.ATR
+STDDAT\B_TOGI.TIM
+STDDAT\T_TOGI.TIM
+STDDAT\B_TOGI.TMD
+STDDAT\T_TOGI.TMD
+STDDAT\GRADE\BT.TIM
+STDDAT\GRADE\HU.TIM
+STDDAT\GRADE\AN.TIM
+STDDAT\GRADE\WI.TIM
+STDDAT\GRADE\DY.TIM
+STDDAT\GRADE\DT.TIM
+STDDAT\GRADE\MT.TIM
+STDDAT\GRADE\NT.TIM
+STDDAT\GRADE\CO.TIM
+STDDAT\GRADE\TW.TIM
+STDDAT\GRADE\GP.TIM
+STDDAT\GRADE\FR.TIM
+STDDAT\GRADE\CAPVO.TIM
+STDDAT\GRADE\CAPV4.TIM
+STDDAT\GRADE\CAPV3.TIM
+STDDAT\GRADE\CAPV2.TIM
+STDDAT\GRADE\CAPV1.TIM
+STDDAT\GRADE\GRADER.TIM
+STDDAT\GRADE\GRADES.TIM
+STDDAT\GRADE\GRADEA.TIM
+STDDAT\GRADE\GRADEB.TIM
+STDDAT\GRADE\GRADEC.TIM
+STDDAT\GRADE\GRADED.TIM
+STDDAT\T_DAI.TMD
+STDDAT\B_DAI.TMD
+STDDAT\CHAMP.TMD
+STDDAT\TIME.TIM
+STDDAT\STDTIM.BIN
+STDDAT\WIN_LOSE.TMD
+ETCHI\EFEDAT.EFE
+PPPnnnFFF
+@@@pD,HT||Lh
+MS PMincho
+,)E'A
+곤충 컵
+휴먼 컵
+애니멀 컵
+다이노 컵
+더티 컵
+메탈릭 컵
+네이처 컵
+선더윈드컵
+그래플 컵
+파이어 컵
+버전Ｏ 컵
+버전４ 컵
+버전３ 컵
+버전２ 컵
+버전１ 컵
+그레이드Ｒ
+그레이드Ｓ
+그레이드Ａ
+그레이드Ｂ
+그레이드Ｃ
+그레이드Ｄ
+SCN\MAPHEAD.SCN
+SCN\DG.SCN
+SCN\convert.jk
+ETCNA\IWA1.TIM
+ETCNA\IWA.TMD
+ETCNA\HAKO.TMD
+ETCNA\DOSYA.TMD
+ETCNA\ABOX.TMD
+ETCNA\GAND.TMD
+ETCHI\OP.TIM
+ETCHI\BOSS_EFE.TMD
+ETCDAT\KARRING.TMD
+NULL
+현재BIT
+가격 %d
+정말 입니까?
+%s카드
+ETCNA\T_YAMA.TMD
+ETCDAT\TAMA.tim
+모으는 아이템
+소지한 물건
+맡긴 물건
+설명을 듣는다
+게임을 시작한다
+「으으, 우리가 졌어...」
+「헤헤헤, 우리의 승리다！」
+「아직 승부는 이제부터야！」
+「너는, 정말 별 볼 일이
+우리의 승리로 한다！
+「그리고, 무승부일 경우는
+푸른 선의 안 쪽이면１점.」
+커링스톤을 올려놓으면 ２점.」
+파워게이지에 맞추어서
+「마지막으로, 던질 세기를 정해.
+던질 방향을 정했으면ａｈｉ로 결정.」
+움직일  수 있어！
+「이 때, 방향키의 상하로
+방향키 좌우로 선택해.」
+「이번엔, 던지는 방향（점선）을
+움직이지 않으니까 잘 써야 해」
+있는데, 그 것은 멈춘 곳에서
+「가끔, 돌에 네 다리가 있은 것이
+있으니가 사용할 타이밍을
+「무거운돌, 가벼운돌, 여러가지 돌이
+선택해.」
+「우선, 커링스톤의 타입을
+「으이...거의 이겼는데...」
+「이 승부는, 질 수는 없어！」
+「아직 졌다고 할 수는 없어！」
+그럼, 게임 시작이다」
+－２점 이니까 그 것만은
+파란 선의 안쪽이면 １점.」
+「마지막으로 던지는 세기를 정해.
+움직일 수가 있어！
+방향키의 좌우로 선택해.」
+「다음은, 던지는 방향（점선）을
+정말 잘 써야 해.」
+정지한 곳에서 움직이지 않으니까,
+「４개의 다리가 있는 돌은
+그 것이 이기는 비결이야！」
+적절하게 사용할 수가 있어.
+「나는 천재니까, 여러 가지 돌을
+종류를 정해야지.」
+「그렇군, 우선 커링스톤의
+C07긙긙긾깛C01
+찾을수없는대사.txt
+@@@@@````
++,*.-)(/
+%& #"$'!
+71256348
+%s\%d-%d.wav
+dhlptxtplh
+C1을 알아들을 수 있게 되었다W
+!#$.289:;<=CFGHIJKLNOPQRSTTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|
+목표를　바꿈
+C1을(를) 떨어뜨렸다W
+C1이(가)RC7
+C1가R부상을 입었다W
+C7「장비한 기술」R
+％만 감소하다 ！W
+RC1을 익혔다W
+Bits
+현재 Bit %d
+DoMove - kAssist
+DoMove - kAll
+DoMove - kDirect
+EFEMcom11__setFunc
+EFEMcom10__popV
+EFEMcom0f__return
+EFEMcom0e__funcS
+EFEMcom0d__jsr
+EFEMcom0c__pushA
+EFEMcom0b__pushV
+EFEMcom0a__pushC
+EFEMcom09__goto
+EFEMcom07__ifV
+EFEMcomXX__null
+EFEMcom04__setV
+EFEMcom03__setT
+EFEMcom02__rand
+EFEMcom01__setV
+EFEMcom00__setC
+gFUNC_MAX
+ID__CheckStatusTarget
+ID__useMP
+ID__GetGSPROJECTION
+ID__objectOnOff
+ID__draw_fade
+ID__CheckHitSendIndex
+ID__CheckHitAllEnemy
+ID__CheckHitDirect
+ID__turn_target
+ID__ColorScreen
+ID__draw_melt
+ID_DrawAurolaFreeze
+ID_MoveAurolaFreeze
+ID_InitAurolaFreeze
+ID__DrawConfuseStorm
+ID__GetScreenProjection
+ID__PaletteChange
+ID__DrawTMDYXZScreen
+ID__set_clut
+ID__DrawTMD_YXZ
+ID__GetSWAngle
+ID__rand_TARGETp
+ID__WorldToScreen
+ID__AndVectorS
+ID__DivVectorS
+ID__MulVectorS
+ID__draw_FT4_2
+ID__reset_trans_root2
+ID__draw_box
+ID__FntPrint
+ID__draw_grID
+ID__draw_FT4
+ID__reset_effect_view
+ID__set_effect_view
+ID__Model_GetJointPos
+ID__set_infoParent
+ID__draw_line
+ID__Mul
+ID__YXZ2XYZ
+ID__Angle_ApplyYXZ
+ID__Target_GetJointPos
+ID__reset_trans_center
+ID__ShiftRVector
+ID__AndVector
+ID__DivVector
+ID__MulVector
+ID__SubVector
+ID__AddVector
+ID__CopyVector
+ID__GetVectorLength
+ID__ChangeLastHitTarget
+ID__angle_yxz2xyz
+ID__CheckHitNoEvent
+ID__vec2ang
+ID__printf
+ID__rand
+ID__GetMedium
+ID__rcos
+ID__rsin
+ID__get_MODELcollision
+ID__leave3D_forPoint
+ID__get_countANIM
+ID__check_insIDeTARGETcircle
+ID__reset_angle_forPoint
+ID__reset_transModel
+ID__draw_mask2
+ID__draw_mask
+ID__reset_trans_root
+ID__play_SE
+ID__set_ELECshock
+ID__get_infoParent
+ID__rotate2D
+ID__draw_3dSP_2
+ID__get_TARGETcollision
+ID__draw_POLY44
+ID__rot_trans_pears
+ID__draw_SP4
+ID__set_dust
+ID__set_shadow
+ID__get_TARGETp
+ID__set_particle
+ID__reset_objRGB
+ID__get_targetPoint
+ID__leave_forPoint
+ID__div_vector
+ID__draw_qube
+ID__get_trans
+ID__hit_target
+ID__reset_transTarget
+ID__rotZYX
+ID__check_hit
+ID__reset_trans
+ID__draw_3dSP
+ID__draw_obj
+ID__set_object
+ID__make_obj
+ID__check_charcter
+ETCDAT\EX.TIM
+ETCDAT\EX.TMD
+ETCDAT\FEEL_EF.TMD
+ETCHI\MAHI.TMD
+ETCDAT\DEFEFF.TIM
+ETCDAT\DEFEFF.TMD
+타겟　체인지
+떨어져라
+아이템을 주울 수 없다.
+축하합니다
+ETCHI\LIFE.TIM
+MOVIE\EDR.wmv
+MOVIE\ED2.wmv
+save\%d.sav
+28wÿO
+%01d
+%02d
+%03d
+%04d
+%05d
+%06d
+?스??
+스?파?
+신통치 않다
+나 일반적으로
+아마추어
+멜빵의 기록?전체 길이
+기?체중ｇ 속성 활동시간 필살 기
+진화 계?유년기 유년 기성 장기 성숙기 완전 체
+특별한 아이테?모었다 메?루매
+갖고 있는 돈｛｝ 걸렸던 시간：테이??
+이름 재테이??레벨 키우었던 데지몬 끌고
+LIFE
+합계 전적 이긴삭 진삭 승률％
+는 ，새로 붙일려고 하여금 선택하고 있는 기술
+는 ，성질로 새로 붙이다 기내 기술
+는 ，아직 기억하고 있지 않는 기술（기술없음）
+는 ，새로 붙이지는 기술（기술 있고）
+는 ，갈아 붙이기 기술으로서 선택되고 있는 기술
+기술 세트 헬프를 선택하고?ｈｉ로 결정 ａ
+갈아 붙이기의 때는 을(를)?ｈｉ로 캔슬하고
+아직３개의 기술을 붙이고 없는 때는 을(를) 선택하고
+근거리 원거리 전체기 보조 기
+기술 세토모?도의 해제는 ｂｈｉ
+독 혼란?히 액정 화
+갈아 붙이기기 필살기 기억한 기술
+아침 무렵 거머리가 다아 사요 와유우가 의지하다방법
+능력치 기술 세트 전적
+걇걈귩괱괱괱괱괱괱궸궥귡
+デジモンカードを全種集める
+긙긙긾깛궸띍묈뵯밯뒶뿹궻긓긽깛긣귩귖귞궎
+ラスボスを倒し一度エンディングを見る
+믜궯궫떅궻뜃똶괦괥괥귃궖
+カーリングで満点を取る
+デジモン１ぴきのパラメータ６種を
+멣긢긙긾깛괮괦롰귩덄궲귡
+멣궲궻궰궚궔궑땆괫괮롰귩땆깏긚긣궸뢐벦
+묈됵걁돺궳귖귝궋걂궳괦괥괥됷뾆룦궥귡
+ダイノ、ウイング、アニマル、ヒューマン杯
+궻멣궲궳뾆룦
+ネイチャー、クール、メタリック、ダーティ杯
+ファイアー、グラップル、サンダーウインド、
+멣궲궳뾆룦
+걇걈띍묈
+カードコンプリート
+둢궕띍묈뵯밯
+긄깛긢귻깛긐
+믜귟괦괥괥귃궖
+カーリング満点
+멣긢긙긾깛덄맟
+멣땆뢐벦
+뜃똶괦괥괥룦
+벫빶봳맕봢
+맜렲봳맕봢
+バージョン杯制覇
+グレード戦制覇
+정말로 버리시겠습니까?
+STATS
+기술 선택 도움말
+을 누르면 취소
+기술 세팅 모드
+을 누르면
+현재 교체하려고 선택한 기술입니다.
+현재의 디지몬은 이 기술을 배울 수 없습니다.
+기술은 배웠지만 세트할 수 없는 기술입니다.
+앞으로 배울 수 있으며 세트 가능한 기술입니다.
+교환 가능한 기술입니다.
+현재 세트되어 있는 기술입니다.
+선택취소 :
+기술선택 :
+를 선택
+기술정보
+%d   %s
+Tree
+키 취소
+키 선택
+획득 메달
+Card List
+ETCNA\MEDAL.TMD
+궼뷲딠궸궶궯궲궢귏궯궫갏
+ETCDAT\TAMA.TMD
+(#(#
+"$$$"
+ÿÿÿÿ'()('-,-!"!#)*(,+-
+"$"#%#
+ETCDAT\FISHING2.TIM
+ETCDAT\FISHING.TIM
+0123456789
+.TMD
+DOOR\DOOR
+ETCDAT\SEA.TMD
+%dD,%d
+ETCDAT\SAO.TMD
+실이 끊어져 버렸다
+가 걸렸다!
+..그러나, 가발이 꽉차서 갖을 수 없다
+을(를) 매달아 올렸다
+라도 가엽기 때문에 놓아주고 들 것 같다
+전체길이 %d사이즈
+굉장하다! 전체길이 %d사이즈
+걸렸다!!!
+아차! 너무 빨랐다
+그래도 미끼는 그대로 있다.
+아차! 너무 늦었다
+미끼가 떨어져 나갔다.
+뭔가 걸렸을려나?
+%x::%s
+DirectX 8.1버전이 설치되어 있으나 "하드웨어 가속 Direct3D"를 초기화 할 수 없습니다.
+DirectX 8.1버전이 설치되어 있지 않습니다.
+공격 력
+방어 력
+x|x|
+회복 플로피
+중회복 플로피
+대회복 플로피
+초회복 플로피
+더블 플로피
+종합 플로피
+만능 플로피
+이상방어 플로피
+부활 플로피
+완전부활 플로피
+공격 플러그인
+방어 플러그인
+고속 플러그인
+만능 플러그인
+공격 플러그인Ｓ
+방어 플러그인Ｓ
+고속 플러그인Ｓ
+오토파일럿
+공격 티켓
+방어 티켓
+판단력 티켓
+순발력 티켓
+악마의 티켓Ａ
+악마의 티켓Ｄ
+악마의 티켓Ｅ
+휴대용 화장실
+연습 설명서
+숙면베개
+적을 피하는 부적
+적을 부르는 종
+건강샌들
+커다란 고기
+최고의 고기
+연습효과 당근
+연습효과 무우
+디지 버섯
+눈송이 버섯
+고급 버섯
+디지 도토리
+파란사과
+아세라로
+황금 도토리
+자연산 밤
+맨드레이크
+식용선인장
+오렌지바나나
+힘의 열매
+튼튼 열매
+날렵함의 열매
+지혜의 열매
+체력의 열매
+정신력의 열매
+디지 송사리
+디지 붕어
+디지 농어
+검은 디지 농어
+디지 메기
+디지 가물치
+상한 고기
+이상한 버섯
+회색 손톱
+불꽃 조각
+불타는 날개
+강철 말발굽
+흑백의 돌
+강철 드릴
+이빨 화석
+검은 깃털
+가시곤봉
+빛나는 갈기
+하얀 깃털
+낡은 천조각
+전기 링
+무지개빛 피리
+성스러운 뿔
+무거운 투구
+톱날 집게
+유기 비료
+자객의 지침서
+용왕의 술
+북극성의 표식
+붉은 조개껍질
+딱딱한 비늘
+얼음수정
+선글라스
+금속 부품
+죽음을 부르는 뼈
+사이버 파츠
+메가 핸드
+메탈 아머
+작은 창
+사랑의 반창고
+황금 바나나
+수수께끼의 알
+기적의 루비
+딱정벌레 다이아
+산호 부적
+달빛의 거울
+호수왕의 피리
+싸구려 낚싯대
+좋은 낚싯대
+레오몬족의 석판
+저택의 열쇠
+톱니바퀴
+초롱꽃  열매
+피묻은 고기
+냉장고의 열쇠
+고대문자 해독기
+기가 핸드
+고귀한 갈기
+메탈 바나나
+*8;<=>
+투기장 전투의 테마5
+투기장 전투의 테마4
+이벤트 전투의 테마
+투기장 전투 테마3
+투기장 전투 테마2
+파트너 패배의 테마
+파트너 승리의 테마
+투기장 전투 테마1
+상대 입장의 테마
+파트너 입장의 테마
+토너먼트 우승의 테마
+토너먼트 승리의 테마
+토너먼트 진행의 테마
+시작의 마을의 테마 (밤)
+시작의 마을의 테마 (낮)
+라스트전투의 테마
+무한 마운틴의 테마
+비밀의 해안동굴의 테마
+비트랜드의 테마 (밤)
+비트랜드의 테마 (낮)
+쓰레기의 산의 테마 (밤)
+쓰레기의 산의 테마 (낮)
+하수도의 테마
+팩토리의 테마 (밤)
+사실의 테마
+장난감 저택의 테마
+왈몬자에몬의 테마
+미스 티밤의 테마
+미스치츠리?주의 테?마
+개골개골 습지의 테마 (밤)
+개골개골 습지의 테마 (낮)
+야조보호지역의 테마 (아래)
+야조보호지역의 테마
+컬링 의 테마
+나 베개의 테마
+프리즈 랜드의 테마 (밤)
+프리즈 랜드의 테마 (낮)
+고대 다이노의 테마2 (밤)
+고대 다이노의 테마2 (낮)
+고대 다이노의 테마1 (밤)
+고대 다이노의 테마1 (낮)
+선택의 숲의 테마 (밤)
+선택의 숲의 테마 (낮)
+레오몬의 테마
+기어사반나의 테마 (밤)
+기어사반나의 테마 (낮)
+하수구의 테마
+암흑 귀족의 저택의 테마
+용암동굴의 테마
+오가몬의 테마３
+만물상의 테마
+오가몬의 테마２
+그레이트 캐년의 테마
+오버델 묘지 테마
+오가몬의 테마
+트릴 터널의 테마
+전망대산의 테마 (밤)
+전망대산의 테마 (낮)
+트로피칼 정글의 테마 (밤)
+트로피칼 정글의 테마 (낮)
+헤매지 않는 숲의 테마 (밤)
+헤매지 않는 숲의 테마 (낮)
+메탈에테몬으로 진화한다！
+화이트레오몬으로 진화한다！
+기가드라몬으로 진화한다！
+고대문자를 읽을 수 있게된다！
+냉장고를 여는 열쇠
+암흑귀족 저택의 열쇠
+레오몬의 선조가 남긴 석판
+호수에서 낚시가되고, 잘 낚인다！
+호수에서 낚시를 할 수있다！
+시드라몬과의 우정의 정표
+에어가루몬으로 진화한다！
+메가시드라몬으로 진화한다！
+헤라클레스캅테리몬으로 진화한다！
+봉황몬으로 진화한다！
+디지타몬으로 진화한다！
+에테몬으로 진화한다！
+베타몬으로 진화한다！
+퍼펫몬으로 진화한다！
+피콜몬으로 진화한다！
+째리몬으로 진화한다！
+메탈콩알몬으로 진화한다！
+콩알몬으로 진화한다！
+메가드라몬으로 진화한다！
+안드로몬으로 진화한다！
+스컬그레이몬으로 진화한다！
+메탈그레이몬으로 진화한다！
+모야몬으로 진화한다！
+모털몬으로 진화한다！
+프리지몬으로 진화한다！
+가루몬으로 진화한다！
+실러컨몬으로 진화한다！
+쉘몬으로 진화한다！
+고래몬으로 진화한다！
+시드라몬으로 진화한다！
+자객몬으로 진화한다！
+베지몬으로 진화한다！
+쿠가몬으로 진화한다！
+캅테리몬으로 진화한다！
+유니몬으로 진화한다！
+꼬끼몬으로 진화한다！
+에어드라몬으로 진화한다！
+벼락몬으로 진화한다！
+고스몬으로 진화한다！
+엔젤몬으로 진화한다！
+레오몬으로 진화한다！
+우가몬으로 진화한다！
+데블몬으로 진화한다！
+티라노몬으로 진화한다！
+두리몬으로 진화한다！
+모노크로몬으로 진화한다！
+켄터스몬으로　진화한다！
+버드라몬으로 진화한다！
+메라몬으로 진화한다！
+그레이몬으로 진화한다！
+먹을것．여러가지 좋은 효과가！
+먹을것．기분이 좋아진다! 때론...
+먹을것．일단 배는 부르지만...
+먹을것．배가 엄청나게 부름。
+먹을것．모든능력이 올라감！
+먹을것．배가 매우 부름
+먹을것．배가 적당히 부름
+먹을것．배가 조금 부름
+먹을것．다이어트에 좋다！
+먹을것．배가 부르지만, 살도 많이찐다！
+먹을것．비싸게 팔 수 있다！
+먹을것．피로회복. 예의, 행복도 올라감！
+먹을것．기분이 매우 좋아진다！
+먹을것．잠시동안 연습 효과가 올라감！
+먹을것．모든 능력이 올라감！
+먹을것．예의가 매우 올라감
+먹을것. 배가 아주 조금 부름
+먹을것. 피로가 많이 풀린다！
+먹을것. 잠시동안 연습 효과가 올라감！
+먹을것. 배가 매우 부름
+먹을것. 배가 적당히 부름
+먹을것. 배가 조금 부름
+가지고 걸으면 조금씩 회복. 뛰면 안됨！
+가지고 있으면 적을 만나기 쉬워진다！
+가지고 있으면 적을 피하기 쉬워진다！
+가지고 있으면 잘때 회복력이 올라간다！
+가지고 있으면 연습의 효과가 올라간다！
+일회용　화장실．어디서나 안심！
+방어력, 속도를 １００올린다.그러나...
+공격력, 지능을 １００올린다.그러나...
+방어력을 ５０올린다
+공격력을 ５０올린다
+마을로 순간이동한다！
+지금 전투만 순발력이 많이 올라감
+지금 전투만 방어력이 많이 올라감
+지금 전투만 공격력이 많이 올라감
+지금 전투만 모든능력이 올라감
+지금 전투만 순발력이 올라감
+지금 전투만 방어력이 올라감
+지금 전투만 공격력이 올라감
+상태이상,가사상태를 고치고,ＨＰ회복！
+가사상태를 고치고,ＨＰ 절반 회복
+전투중의 상태이상을 막는다！
+독·마비·혼란·액정화를 고친다
+하이메가브러스터
+메일스트롬
+그레이샬브러스트
+크림존플레어
+무한케논
+절대영도펀치
+볼케노스트라이크
+버리어브르더츠
+스파이럴소트
+스파크링선더
+시저암즈
+프치화이어
+포이즌아이비
+페트러화이어
+나이트메어신드롬
+무한빈터
+메테오윙
+메가브러스터
+러브·세레나데
+야수왕권
+제트아로
+이가류수리검법
+아이스아로
+하이드로프렛샤
+하이틴케논
+뼈부메랑
+호리숏트
+헬즈핸드
+헤븐즈너클
+그라운드제로
+기가디스트로이어
+제노사이드어텍
+에네르기범
+일렉트릭스레드
+드릴스핀
+딧드리봄
+싱거운　한숨
+에어숏트
+메지컬화이어
+스피닝니들
+스마일리봄
+아브다쿠숀광선
+전기충격비리링
+폭스화이어
+메가프레임
+디스크로우
+버닝휘스트
+러블리어텍
+헤비프레임
+화이어브레스
+엔가처킹
+궁극운치지옥그림지도
+엔가초킹
+고속운치팔방투
+분팔방투
+거대운치팔방투
+거대운치투
+고속운치투
+초악취분사
+버스터다이브
+메가톤펀치
+다이너마이트킹
+마하점프
+워크라이
+멋슬챠지
+그린트렙
+데인저스팅
+포이즌크로우
+찬파휴므
+마스모포인섹트플레그
+포이즌파우더
+리버스프로그램
+후리포텐셜
+디리트프로그램
+펄스레이저
+메탈스프린더
+올렌지빔
+파워크레인
+티어드롭
+오로라프리즈
+아쿠어메직
+워터브리트
+아이스니들
+빈터브러스트
+아이스스탓츄
+기가프리즈
+허리케인
+콘퓨즈스톰
+윈도우컷터
+스터틱에렉트
+메가로스파크
+일렉트릭크라우드
+스피닝숏트
+선더저스티즈
+멜트다운
+인피니티번
+히트웨이브
+마그마범
+레드인페르노
+스핏트화이어
+프로미넌스빔
+화이어타워
+UYVYYUY2DXT1DXT2DXT3DXT4DXT5F
+픘YVY
+?.vW@
+p냄6^
+dタ>P
+f졒tf
+t벩(뾁?
+~請ｯ瓔?
+뒎풭坂?
+꼪옜뚺?
+P꽴}쀴?
+컐였쒘?
+|s퓪孼?
+hr퓣뗮?
+@p엿聾?
+U풶롢?
+\S왼汀?
+|R퓯잂?
+tE옌枚?
+(C엣號?
+,@와昴?
+l?ｿ}摂?
+;옌往?
+P8왕群?
+1욈叡?
+\0옐Φ?
+t.웅祥?
+`+퓠앏?
+0'엣蟬?
+綿앓낼?
+漂풏鞭?
+롻얽쎖?
+찝쓺市?
+뀀풒횐?
+豆풝졸?
+堊H옇?
+鷺앝킷?
+皇앤幷?
+選쒼뙱?
+겊았炙?
+J횡6諛?
+꽶앉餘?
+뼽없옶?
+戟푏푿?
+쑘푐父?
+융풓삮?
+6늅2擊?
+넯푂珩?
+벼푒묠?
+젳쐼묘?
+p왍%윢?
+p쑟&再?
+崟,y｢?
+z埓"?｢?
+릺야뮕?
+컧풎풛?
+떮v첏?
+R꺘n쿃?
+$|얻옑?
+툂쓺넆?
+Xr풏죻?
+n푍핓?
+@m푃뱮?
+(i퐹퇂?
+\hｾ 兼?
+dd애퀞?
+쐁업닋?
+_씬땻?
+T[푕폁?
+쁛엉뮁?
+PV씸윆?
+,R푣콒?
+|Q풆뎻?
+|M암윂?
+쟅푗퍕?
+@E얏큾?
+쭰었릩?
+x@풆몜?
+l<ｾ+莱?
+9풌흫?
+욶銓욶銓욶銓욶銓
+/6柱O뱉튟뱉튟뱉튟밖
+떵靜L민最7靜L민最7
+a4,껠"?껠"?껠"?껠"?
+?쩓j?,L
+ｼCEu蹉ﾅQ胼KB
+슇Y>t$7?*찒=
+슇Y>t$7?
+뤔<絿-=
+-DTû!
+ﾉ?X葵4X葵4X葵4X葵4h!"4h!"4h!"4h!"4三ｮ=三ｮ=三ｮ=三ｮ=tU
+ｾ三ｮ=三ｮ=三ｮ=三ｮ=h!"4h!"4h!"4h!"4ﾛ
+뤔<絿-=絿-=絿-=絿-=
+w늿s3
+ww333
+뻣33뺙30
+;ｻ3;33
+;3뻣33
+;3333ｳ3333
+3333
+뻣뻣33;뺙0
+;뻣뻣뻣뺙
