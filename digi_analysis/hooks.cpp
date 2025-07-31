@@ -74,9 +74,9 @@ static OrigFunc00428EE0 s_orig00428EE0 = nullptr;
 using OrigFunc00495E1A = int(__thiscall*)(void*, int*);
 static OrigFunc00495E1A s_orig00495E1A = nullptr;
 
-// 0x00495F5B: RenderText(this, uint* a1, uint* a2, uint a3, int* a4,
-//                        UINT a5, undefined4 a6, LPCWSTR a7) -> uint*
-using OrigFunc00495F5B = uint* (__thiscall*)(void*, uint*, uint*, uint, int*, UINT, unsigned int, const wchar_t*);
+// 0x00495F5B: RenderText(this, unsigned int* a1, unsigned int* a2, unsigned int a3, int* a4,
+//                        UINT a5, unsigned int a6, LPCWSTR a7) -> unsigned int*
+using OrigFunc00495F5B = unsigned int* (__thiscall*)(void*, unsigned int*, unsigned int*, unsigned int, int*, UINT, unsigned int, const wchar_t*);
 static OrigFunc00495F5B s_orig00495F5B = nullptr;
 
 // 0x0040EA40: CDWWnd::PreCreateWindow(int param) -> int
@@ -121,7 +121,7 @@ static int __fastcall Detour00495E1A(void* _this, void* /*not used*/, int* param
     return s_orig00495E1A ? s_orig00495E1A(_this, param1) : -1;
 }
 
-static uint* __fastcall Detour00495F5B(void* _this, void* /*not used*/, uint* a1, uint* a2, uint a3,
+static unsigned int* __fastcall Detour00495F5B(void* _this, void* /*not used*/, unsigned int* a1, unsigned int* a2, unsigned int a3,
                                         int* a4, UINT a5, unsigned int a6, const wchar_t* a7) {
     OutputDebugStringA("Detour00495F5B: RenderText called\n");
     return s_orig00495F5B ? s_orig00495F5B(_this, a1, a2, a3, a4, a5, a6, a7) : nullptr;
