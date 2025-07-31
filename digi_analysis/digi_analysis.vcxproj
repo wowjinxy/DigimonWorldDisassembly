@@ -74,6 +74,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="gdi_hooks.cpp" />
+    <ClCompile Include="text_renderer.cpp" />
     <!-- Compile the MinHook sources as part of this project. -->
     <ClCompile Include="..\third_party\minhook\src\buffer.c" />
     <ClCompile Include="..\third_party\minhook\src\hook.c" />
@@ -87,6 +88,7 @@
     <ClInclude Include="strings.h" />
     <ClInclude Include="hooks.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="text_renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sub_004A1F8A.asm" />
