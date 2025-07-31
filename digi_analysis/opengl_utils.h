@@ -5,7 +5,7 @@
 
 #pragma once
 #include <windows.h>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <vector>
 
 class IDirect3DTexture8;      // forward declaration

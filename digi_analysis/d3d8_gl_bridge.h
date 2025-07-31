@@ -1,10 +1,6 @@
 #pragma once
 #include <windows.h>
-#include <GL/gl.h>
-#ifndef GL_GLEXT_PROTOTYPES
-#define GL_GLEXT_PROTOTYPES
-#endif
-#include <GL/glext.h>
+#include <GL/glew.h>
 #include <vector>
 #include <cstddef>
 #include "opengl_utils.h"
