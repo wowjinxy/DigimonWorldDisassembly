@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <cstring>
 #include "opengl_utils.h"
+#include "d3d8_gl_bridge.h"
 
 // Apply an in‑memory patch to bypass the CD check.  The patch data
 // and offsets were extracted from the original project.  On success
@@ -46,38 +47,18 @@ static void ApplyNoCD() {
 // Custom implementation of Direct3DCreate8
 //
 // When the game calls Direct3DCreate8 it expects to receive a pointer to
-// an IDirect3D8 interface.  To allow us to replace the DirectX renderer
-// with an OpenGL implementation we provide our own exported version of
-// Direct3DCreate8 here.  This function logs that it has been invoked
-// and can perform any initialisation required for an OpenGL context.
-// After performing its work it returns nullptr to signal that the
-// original Direct3D path is unavailable.  All rendering should be
-// performed via the OpenGL context initialised inside this function.
-
-// Forward declaration of the Direct3D 8 interface.  We continue to
-// declare it opaquely so callers can compile against this header
-// without the full DirectX SDK.
-struct IDirect3D8;
+// an IDirect3D8 interface.  Our implementation now constructs a small
+// COM‑style stub that translates only the handful of methods exercised by
+// the game into OpenGL calls.  Additional Direct3D functionality is not
+// emulated.
 
 // Exported Direct3DCreate8 replacement.  This function is exported from
 // our DLL under both the decorated and undecorated names via the linker
-// directive above.  It initialises an OpenGL backend and returns nullptr
-// to indicate that the original Direct3D implementation is absent.
+// directive above.  It simply allocates the bridge object and returns it
+// to the caller.
 extern "C" __declspec(dllexport) IDirect3D8* WINAPI Direct3DCreate8(UINT /*sdkVersion*/) {
-    // Log that our replacement has been called.  Use OutputDebugStringA so
-    // that messages appear in the debugger without popping up a MessageBox.
     OutputDebugStringA("Direct3DCreate8 called – OpenGL backend active\n");
-
-    // Initialise the OpenGL context.  If this fails we simply report that
-    // Direct3D is unavailable by returning nullptr.
-    if (!InitOpenGL()) {
-        return nullptr;
-    }
-
-    // No Direct3D implementation is provided; returning nullptr informs the
-    // caller that the traditional Direct3D path is disabled.  All rendering
-    // should now be performed via the OpenGL context created above.
-    return nullptr;
+    return new IDirect3D8();
 }
 
 // Export our custom Direct3DCreate8 function under its undecorated name.
