@@ -5,3 +5,6 @@
 // Returns true on success, false on failure.
 bool InitOpenGL();
 
+// Tears down the OpenGL context and associated resources.
+void ShutdownOpenGL();
+

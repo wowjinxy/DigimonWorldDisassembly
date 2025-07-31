@@ -2,10 +2,33 @@
 #include <GL/gl.h>
 
 namespace {
-    bool g_OpenGLWindowCreated = false;
-    HWND g_hWndGL = nullptr;
-    HGLRC g_hGLRC = nullptr;
-    HDC  g_hDCGL = nullptr;
+    bool   g_OpenGLWindowCreated = false;
+    HWND   g_hWndGL              = nullptr;
+    HGLRC  g_hGLRC               = nullptr;
+    HDC    g_hDCGL               = nullptr;
+    HANDLE g_renderThread        = nullptr;
+    bool   g_running             = false;
+
+    DWORD WINAPI RenderThread(LPVOID) {
+        typedef void (APIENTRY* PFNGLCLEARCOLORPROC)(float, float, float, float);
+        typedef void (APIENTRY* PFNGLCLEARPROC)(unsigned int);
+        PFNGLCLEARCOLORPROC pglClearColor = (PFNGLCLEARCOLORPROC)wglGetProcAddress("glClearColor");
+        PFNGLCLEARPROC      pglClear      = (PFNGLCLEARPROC)wglGetProcAddress("glClear");
+        while (g_running) {
+            MSG msg;
+            while (PeekMessage(&msg, g_hWndGL, 0, 0, PM_REMOVE)) {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
+            if (pglClearColor && pglClear) {
+                pglClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+                pglClear(GL_COLOR_BUFFER_BIT);
+            }
+            SwapBuffers(g_hDCGL);
+            Sleep(16);
+        }
+        return 0;
+    }
 }
 
 bool InitOpenGL() {
@@ -74,15 +97,48 @@ bool InitOpenGL() {
         return false;
     }
     ShowWindow(g_hWndGL, SW_SHOW);
-    typedef void (APIENTRY* PFNGLCLEARCOLORPROC)(float, float, float, float);
-    typedef void (APIENTRY* PFNGLCLEARPROC)(unsigned int);
-    PFNGLCLEARCOLORPROC pglClearColor = (PFNGLCLEARCOLORPROC)wglGetProcAddress("glClearColor");
-    PFNGLCLEARPROC      pglClear      = (PFNGLCLEARPROC)wglGetProcAddress("glClear");
-    if (pglClearColor && pglClear) {
-        pglClearColor(0.1f, 0.2f, 0.3f, 1.0f);
-        pglClear(GL_COLOR_BUFFER_BIT);
-        SwapBuffers(g_hDCGL);
+
+    g_running = true;
+    g_renderThread = CreateThread(nullptr, 0, RenderThread, nullptr, 0, nullptr);
+    if (!g_renderThread) {
+        g_running = false;
+        wglMakeCurrent(nullptr, nullptr);
+        wglDeleteContext(g_hGLRC);
+        ReleaseDC(g_hWndGL, g_hDCGL);
+        DestroyWindow(g_hWndGL);
+        g_hGLRC = nullptr;
+        g_hDCGL = nullptr;
+        g_hWndGL = nullptr;
+        return false;
     }
+
     g_OpenGLWindowCreated = true;
     return true;
+}
+
+void ShutdownOpenGL() {
+    if (!g_OpenGLWindowCreated) {
+        return;
+    }
+
+    g_running = false;
+    if (g_renderThread) {
+        WaitForSingleObject(g_renderThread, INFINITE);
+        CloseHandle(g_renderThread);
+        g_renderThread = nullptr;
+    }
+    wglMakeCurrent(nullptr, nullptr);
+    if (g_hGLRC) {
+        wglDeleteContext(g_hGLRC);
+        g_hGLRC = nullptr;
+    }
+    if (g_hDCGL && g_hWndGL) {
+        ReleaseDC(g_hWndGL, g_hDCGL);
+        g_hDCGL = nullptr;
+    }
+    if (g_hWndGL) {
+        DestroyWindow(g_hWndGL);
+        g_hWndGL = nullptr;
+    }
+    g_OpenGLWindowCreated = false;
 }
