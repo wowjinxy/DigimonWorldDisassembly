@@ -52,7 +52,7 @@ ULONG IDirect3DTexture8::Release() {
     return ref;
 }
 
-void IDirect3DTexture8::UpdateData(const void* src, size_t size) {
+void IDirect3DTexture8::UpdateData(const void* src, unsigned int size) {
     if (size <= m_pixels.size()) {
         std::memcpy(m_pixels.data(), src, size);
         m_uploaded = false;

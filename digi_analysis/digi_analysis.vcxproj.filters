@@ -60,6 +60,12 @@
     <ClCompile Include="..\third_party\minhook\src\hde\hde64.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="d3d8_gl_bridge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="opengl_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="digi_table.h">
@@ -69,6 +75,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d8_gl_bridge.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="digi_bytes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="opengl_utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

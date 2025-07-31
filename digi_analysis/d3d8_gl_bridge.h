@@ -36,7 +36,7 @@ public:
 
     // Update the backing pixel buffer.  Expects width*height*4 bytes of
     // RGBA data.
-    void UpdateData(const void* src, size_t size);
+    void UpdateData(const void* src, unsigned int size);
 
     // Called on the render thread to create the GL texture if needed.
     void Upload();

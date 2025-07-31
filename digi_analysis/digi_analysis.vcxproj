@@ -78,8 +78,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="d3d8_gl_bridge.cpp" />
     <ClCompile Include="functions.cpp" />
     <ClCompile Include="digi_table.cpp" />
+    <ClCompile Include="opengl_utils.cpp" />
     <ClCompile Include="strings.cpp" />
     <ClCompile Include="hooks.cpp" />
     <ClCompile Include="sub_004A1F8A.cpp" />
@@ -95,8 +97,11 @@
     <ClCompile Include="..\third_party\minhook\src\hde\hde64.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="d3d8_gl_bridge.h" />
+    <ClInclude Include="digi_bytes.h" />
     <ClInclude Include="functions.h" />
     <ClInclude Include="digi_table.h" />
+    <ClInclude Include="opengl_utils.h" />
     <ClInclude Include="strings.h" />
     <ClInclude Include="hooks.h" />
     <ClInclude Include="resource.h" />
