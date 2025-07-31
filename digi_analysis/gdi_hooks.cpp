@@ -11,7 +11,9 @@
 #include "MinHook.h"
 #include <cstdio>
 #include <vector>
-#include <GL/gl.h>
+#include <unordered_map>
+
+#include "text_renderer.h"
 
 // Forward declarations of the original functions.  We store these in
 // static variables so that the detours can call through after doing
@@ -58,6 +60,17 @@ static void LogCall(const char* funcName) {
     OutputDebugStringA(buf);
 }
 
+struct DCState {
+    HDC      hdc;
+    HFONT    font;
+    COLORREF textColor;
+    COLORREF bkColor;
+    int      bkMode;
+};
+
+static std::unordered_map<HDC, DCState> g_dcState;
+static bool g_enableFallback = false;
+
 // Detour implementations.  Each detour logs its invocation and then
 // calls the original function.  Replace the call to the original
 // function with your own implementation once the OpenGL renderer is
@@ -66,7 +79,20 @@ static void LogCall(const char* funcName) {
 
 static HDC WINAPI Detour_CreateCompatibleDC(HDC hdc) {
     LogCall("CreateCompatibleDC");
-    return orig_CreateCompatibleDC ? orig_CreateCompatibleDC(hdc) : nullptr;
+    if (!orig_CreateCompatibleDC) {
+        return nullptr;
+    }
+    HDC real = orig_CreateCompatibleDC(hdc);
+    if (real) {
+        DCState state{};
+        state.hdc       = real;
+        state.font      = (HFONT)GetStockObject(SYSTEM_FONT);
+        state.textColor = RGB(255, 255, 255);
+        state.bkColor   = RGB(0, 0, 0);
+        state.bkMode    = TRANSPARENT;
+        g_dcState[real] = state;
+    }
+    return real;
 }
 
 static HBITMAP WINAPI Detour_CreateDIBSection(HDC hdc, const BITMAPINFO* pbmi, UINT usage,
@@ -98,21 +124,56 @@ static HFONT WINAPI Detour_CreateFontIndirectA(const LOGFONTA* plf) {
 
 static BOOL WINAPI Detour_DeleteDC(HDC hdc) {
     LogCall("DeleteDC");
+    auto it = g_dcState.find(hdc);
+    if (it != g_dcState.end()) {
+        if (orig_DeleteDC) {
+            orig_DeleteDC(it->second.hdc);
+        }
+        g_dcState.erase(it);
+        return TRUE;
+    }
     return orig_DeleteDC ? orig_DeleteDC(hdc) : FALSE;
 }
 
 static HGDIOBJ WINAPI Detour_SelectObject(HDC hdc, HGDIOBJ hgdiobj) {
     LogCall("SelectObject");
+    auto it = g_dcState.find(hdc);
+    if (it != g_dcState.end() && GetObjectType(hgdiobj) == OBJ_FONT) {
+        HFONT prev = it->second.font;
+        it->second.font = (HFONT)hgdiobj;
+        if (orig_SelectObject) {
+            orig_SelectObject(hdc, hgdiobj);
+        }
+        return (HGDIOBJ)prev;
+    }
     return orig_SelectObject ? orig_SelectObject(hdc, hgdiobj) : nullptr;
 }
 
 static COLORREF WINAPI Detour_SetBkColor(HDC hdc, COLORREF color) {
     LogCall("SetBkColor");
+    auto it = g_dcState.find(hdc);
+    if (it != g_dcState.end()) {
+        COLORREF prev = it->second.bkColor;
+        it->second.bkColor = color;
+        if (orig_SetBkColor) {
+            orig_SetBkColor(hdc, color);
+        }
+        return prev;
+    }
     return orig_SetBkColor ? orig_SetBkColor(hdc, color) : 0;
 }
 
 static int WINAPI Detour_SetBkMode(HDC hdc, int mode) {
     LogCall("SetBkMode");
+    auto it = g_dcState.find(hdc);
+    if (it != g_dcState.end()) {
+        int prev = it->second.bkMode;
+        it->second.bkMode = mode;
+        if (orig_SetBkMode) {
+            orig_SetBkMode(hdc, mode);
+        }
+        return prev;
+    }
     return orig_SetBkMode ? orig_SetBkMode(hdc, mode) : 0;
 }
 
@@ -133,37 +194,31 @@ static BOOL WINAPI Detour_GetTextMetricsA(HDC hdc, LPTEXTMETRICA lptm) {
 
 static COLORREF WINAPI Detour_SetTextColor(HDC hdc, COLORREF color) {
     LogCall("SetTextColor");
+    auto it = g_dcState.find(hdc);
+    if (it != g_dcState.end()) {
+        COLORREF prev = it->second.textColor;
+        it->second.textColor = color;
+        if (orig_SetTextColor) {
+            orig_SetTextColor(hdc, color);
+        }
+        return prev;
+    }
     return orig_SetTextColor ? orig_SetTextColor(hdc, color) : 0;
 }
 
 static BOOL WINAPI Detour_TextOutA(HDC hdc, int x, int y, LPCSTR lpString, int c) {
     LogCall("TextOutA");
-    MAT2 mat = { {0,1}, {0,0}, {0,0}, {0,1} };
-    int penX = x;
-    for (int i = 0; i < c; ++i) {
-        GLYPHMETRICS gm;
-        DWORD size = GetGlyphOutlineA(hdc, static_cast<UINT>(lpString[i]), GGO_BITMAP, &gm, 0, nullptr, &mat);
-        if (size == GDI_ERROR || size == 0) {
-            continue;
-        }
-        std::vector<BYTE> buffer(size);
-        if (GetGlyphOutlineA(hdc, static_cast<UINT>(lpString[i]), GGO_BITMAP, &gm, size, buffer.data(), &mat) == GDI_ERROR) {
-            continue;
-        }
-        GLuint tex;
-        glGenTextures(1, &tex);
-        glBindTexture(GL_TEXTURE_2D, tex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, gm.gmBlackBoxX, gm.gmBlackBoxY, 0,
-                     GL_ALPHA, GL_UNSIGNED_BYTE, buffer.data());
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.f, 0.f); glVertex2i(penX, y);
-        glTexCoord2f(1.f, 0.f); glVertex2i(penX + gm.gmBlackBoxX, y);
-        glTexCoord2f(1.f, 1.f); glVertex2i(penX + gm.gmBlackBoxX, y + gm.gmBlackBoxY);
-        glTexCoord2f(0.f, 1.f); glVertex2i(penX, y + gm.gmBlackBoxY);
-        glEnd();
-        glDeleteTextures(1, &tex);
-        penX += gm.gmCellIncX;
+    if (!lpString || c <= 0) {
+        return TRUE;
     }
+    auto it = g_dcState.find(hdc);
+    COLORREF color = RGB(255, 255, 255);
+    HFONT font = nullptr;
+    if (it != g_dcState.end()) {
+        color = it->second.textColor;
+        font  = it->second.font;
+    }
+    TextRenderer::DrawTextA(hdc, font, x, y, lpString, c, color);
     return TRUE;
 }
 

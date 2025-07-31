@@ -10,8 +10,8 @@
 #include <windows.h>
 #include <cstdint>
 #include <vector>
-#include <GL/gl.h>
 #include "functions.h"
+#include "text_renderer.h"
 
 // Forward declaration of our stub for 0x004A1F8A.  Defined in
 // sub_004A1F8A.cpp.  The calling convention is __stdcall to match
@@ -133,36 +133,11 @@ static unsigned int* __fastcall Detour00495F5B(void* _this, void* /*not used*/, 
         return a1;
     }
     HDC hdc = GetDC(nullptr);
-    if (!hdc) {
-        return a1;
+    if (hdc) {
+        HFONT font = (HFONT)GetStockObject(SYSTEM_FONT);
+        TextRenderer::DrawTextW(hdc, font, 0, 0, a7, lstrlenW(a7), RGB(255,255,255));
+        ReleaseDC(nullptr, hdc);
     }
-    MAT2 mat = { {0,1}, {0,0}, {0,0}, {0,1} };
-    int penX = 0;
-    for (const wchar_t* p = a7; *p; ++p) {
-        GLYPHMETRICS gm;
-        DWORD size = GetGlyphOutlineW(hdc, *p, GGO_BITMAP, &gm, 0, nullptr, &mat);
-        if (size == GDI_ERROR || size == 0) {
-            continue;
-        }
-        std::vector<BYTE> buffer(size);
-        if (GetGlyphOutlineW(hdc, *p, GGO_BITMAP, &gm, size, buffer.data(), &mat) == GDI_ERROR) {
-            continue;
-        }
-        GLuint tex;
-        glGenTextures(1, &tex);
-        glBindTexture(GL_TEXTURE_2D, tex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, gm.gmBlackBoxX, gm.gmBlackBoxY, 0,
-                     GL_ALPHA, GL_UNSIGNED_BYTE, buffer.data());
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.f, 0.f); glVertex2i(penX, 0);
-        glTexCoord2f(1.f, 0.f); glVertex2i(penX + gm.gmBlackBoxX, 0);
-        glTexCoord2f(1.f, 1.f); glVertex2i(penX + gm.gmBlackBoxX, gm.gmBlackBoxY);
-        glTexCoord2f(0.f, 1.f); glVertex2i(penX, gm.gmBlackBoxY);
-        glEnd();
-        glDeleteTextures(1, &tex);
-        penX += gm.gmCellIncX;
-    }
-    ReleaseDC(nullptr, hdc);
     return a1;
 }
 
