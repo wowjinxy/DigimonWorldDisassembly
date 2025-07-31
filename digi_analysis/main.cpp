@@ -5,6 +5,9 @@
 // live in functions.cpp and the extracted strings are available in strings.h.
 
 #include <windows.h>
+// Use GLEW to handle OpenGL extensions instead of relying on the older
+// glext headers.
+#include <GL/glew.h>
 #include <string>
 #include "digi_table.h"
 #include "strings.h"
