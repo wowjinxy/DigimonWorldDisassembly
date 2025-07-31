@@ -3,14 +3,15 @@
 // Hook implementations for selected GDI32 functions.  The Digimon
 // World PC port uses GDI calls for 2D UI and text rendering.  To
 // facilitate porting the renderer to OpenGL we intercept these calls
-// and log them via OutputDebugStringA.  You can replace the bodies
-// of the detour functions with OpenGL equivalents once you have a
-// working renderer.  For now the detours simply forward to the
-// original functions after logging.
+// and, where appropriate, replace the original behaviour.  For text
+// drawing the detours capture glyph bitmaps and render textured quads
+// using OpenGL, bypassing GDI entirely.
 
 #include <windows.h>
 #include "MinHook.h"
 #include <cstdio>
+#include <vector>
+#include <GL/gl.h>
 
 // Forward declarations of the original functions.  We store these in
 // static variables so that the detours can call through after doing
@@ -30,6 +31,7 @@ typedef int   (WINAPI* PFN_GetObjectA)(HGDIOBJ, int, LPVOID);
 typedef BOOL  (WINAPI* PFN_GetTextExtentPoint32A)(HDC, LPCSTR, int, LPSIZE);
 typedef BOOL  (WINAPI* PFN_GetTextMetricsA)(HDC, LPTEXTMETRICA);
 typedef COLORREF (WINAPI* PFN_SetTextColor)(HDC, COLORREF);
+typedef BOOL (WINAPI* PFN_TextOutA)(HDC, int, int, LPCSTR, int);
 
 // Static storage for the original function pointers.  These are
 // initialised in InstallGDIHooks().
@@ -46,6 +48,7 @@ static PFN_GetObjectA                orig_GetObjectA                = nullptr;
 static PFN_GetTextExtentPoint32A     orig_GetTextExtentPoint32A     = nullptr;
 static PFN_GetTextMetricsA           orig_GetTextMetricsA           = nullptr;
 static PFN_SetTextColor              orig_SetTextColor              = nullptr;
+static PFN_TextOutA                  orig_TextOutA                  = nullptr;
 
 // Helper to log a message to the debugger.  This avoids duplicating
 // the OutputDebugStringA call in every detour.
@@ -133,6 +136,37 @@ static COLORREF WINAPI Detour_SetTextColor(HDC hdc, COLORREF color) {
     return orig_SetTextColor ? orig_SetTextColor(hdc, color) : 0;
 }
 
+static BOOL WINAPI Detour_TextOutA(HDC hdc, int x, int y, LPCSTR lpString, int c) {
+    LogCall("TextOutA");
+    MAT2 mat = { {0,1}, {0,0}, {0,0}, {0,1} };
+    int penX = x;
+    for (int i = 0; i < c; ++i) {
+        GLYPHMETRICS gm;
+        DWORD size = GetGlyphOutlineA(hdc, static_cast<UINT>(lpString[i]), GGO_BITMAP, &gm, 0, nullptr, &mat);
+        if (size == GDI_ERROR || size == 0) {
+            continue;
+        }
+        std::vector<BYTE> buffer(size);
+        if (GetGlyphOutlineA(hdc, static_cast<UINT>(lpString[i]), GGO_BITMAP, &gm, size, buffer.data(), &mat) == GDI_ERROR) {
+            continue;
+        }
+        GLuint tex;
+        glGenTextures(1, &tex);
+        glBindTexture(GL_TEXTURE_2D, tex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, gm.gmBlackBoxX, gm.gmBlackBoxY, 0,
+                     GL_ALPHA, GL_UNSIGNED_BYTE, buffer.data());
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.f, 0.f); glVertex2i(penX, y);
+        glTexCoord2f(1.f, 0.f); glVertex2i(penX + gm.gmBlackBoxX, y);
+        glTexCoord2f(1.f, 1.f); glVertex2i(penX + gm.gmBlackBoxX, y + gm.gmBlackBoxY);
+        glTexCoord2f(0.f, 1.f); glVertex2i(penX, y + gm.gmBlackBoxY);
+        glEnd();
+        glDeleteTextures(1, &tex);
+        penX += gm.gmCellIncX;
+    }
+    return TRUE;
+}
+
 // Install hooks for all the GDI functions listed above.  This routine
 // retrieves the address of each target from GDI32.dll and uses
 // MinHook to create a detour.  Hooks are enabled after creation via
@@ -185,4 +219,7 @@ void InstallGDIHooks() {
     MH_CreateHook(reinterpret_cast<void*>(GetProcAddress(gdi, "SetTextColor")),
                   reinterpret_cast<void*>(&Detour_SetTextColor),
                   reinterpret_cast<void**>(&orig_SetTextColor));
+    MH_CreateHook(reinterpret_cast<void*>(GetProcAddress(gdi, "TextOutA")),
+                  reinterpret_cast<void*>(&Detour_TextOutA),
+                  reinterpret_cast<void**>(&orig_TextOutA));
 }

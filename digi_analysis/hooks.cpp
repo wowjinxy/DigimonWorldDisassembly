@@ -9,6 +9,8 @@
 #include "hooks.h"
 #include <windows.h>
 #include <cstdint>
+#include <vector>
+#include <GL/gl.h>
 #include "functions.h"
 
 // Forward declaration of our stub for 0x004A1F8A.  Defined in
@@ -127,7 +129,41 @@ static int __fastcall Detour00495E1A(void* _this, void* /*not used*/, int* param
 static unsigned int* __fastcall Detour00495F5B(void* _this, void* /*not used*/, unsigned int* a1, unsigned int* a2, unsigned int a3,
                                         int* a4, UINT a5, unsigned int a6, const wchar_t* a7) {
     OutputDebugStringA("Detour00495F5B: RenderText called\n");
-    return s_orig00495F5B ? s_orig00495F5B(_this, a1, a2, a3, a4, a5, a6, a7) : nullptr;
+    if (!a7) {
+        return a1;
+    }
+    HDC hdc = GetDC(nullptr);
+    if (!hdc) {
+        return a1;
+    }
+    MAT2 mat = { {0,1}, {0,0}, {0,0}, {0,1} };
+    int penX = 0;
+    for (const wchar_t* p = a7; *p; ++p) {
+        GLYPHMETRICS gm;
+        DWORD size = GetGlyphOutlineW(hdc, *p, GGO_BITMAP, &gm, 0, nullptr, &mat);
+        if (size == GDI_ERROR || size == 0) {
+            continue;
+        }
+        std::vector<BYTE> buffer(size);
+        if (GetGlyphOutlineW(hdc, *p, GGO_BITMAP, &gm, size, buffer.data(), &mat) == GDI_ERROR) {
+            continue;
+        }
+        GLuint tex;
+        glGenTextures(1, &tex);
+        glBindTexture(GL_TEXTURE_2D, tex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, gm.gmBlackBoxX, gm.gmBlackBoxY, 0,
+                     GL_ALPHA, GL_UNSIGNED_BYTE, buffer.data());
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.f, 0.f); glVertex2i(penX, 0);
+        glTexCoord2f(1.f, 0.f); glVertex2i(penX + gm.gmBlackBoxX, 0);
+        glTexCoord2f(1.f, 1.f); glVertex2i(penX + gm.gmBlackBoxX, gm.gmBlackBoxY);
+        glTexCoord2f(0.f, 1.f); glVertex2i(penX, gm.gmBlackBoxY);
+        glEnd();
+        glDeleteTextures(1, &tex);
+        penX += gm.gmCellIncX;
+    }
+    ReleaseDC(nullptr, hdc);
+    return a1;
 }
 
 static int __fastcall Detour0040EA40(void* _this, void* /*not used*/, int param) {
