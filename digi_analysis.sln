@@ -2,50 +2,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35825.156 d17.13
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "digi_analysis", "digi_analysis\digi_analysis.vcxproj", "{E639CCBF-F553-4266-8784-0F5CE88692B5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "digi_analysis", "digi_analysis\\digi_analysis.vcxproj", "{E639CCBF-F553-4266-8784-0F5CE88692B5}"
 EndProject
 Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Debug|Gaming.Desktop.x64 = Debug|Gaming.Desktop.x64
-		Debug|Gaming.Xbox.Scarlett.x64 = Debug|Gaming.Xbox.Scarlett.x64
-		Debug|Gaming.Xbox.XboxOne.x64 = Debug|Gaming.Xbox.XboxOne.x64
-		Debug|X64 = Debug|X64
-		Debug|x86 = Debug|x86
-		Release|Any CPU = Release|Any CPU
-		Release|Gaming.Desktop.x64 = Release|Gaming.Desktop.x64
-		Release|Gaming.Xbox.Scarlett.x64 = Release|Gaming.Xbox.Scarlett.x64
-		Release|Gaming.Xbox.XboxOne.x64 = Release|Gaming.Xbox.XboxOne.x64
-		Release|X64 = Release|X64
-		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|Gaming.Desktop.x64.ActiveCfg = Debug|Gaming.Desktop.x64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|Gaming.Desktop.x64.Build.0 = Debug|Gaming.Desktop.x64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|Gaming.Xbox.Scarlett.x64.ActiveCfg = Debug|Gaming.Xbox.Scarlett.x64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|Gaming.Xbox.Scarlett.x64.Build.0 = Debug|Gaming.Xbox.Scarlett.x64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|Gaming.Xbox.XboxOne.x64.ActiveCfg = Debug|Gaming.Xbox.XboxOne.x64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|Gaming.Xbox.XboxOne.x64.Build.0 = Debug|Gaming.Xbox.XboxOne.x64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|X64.ActiveCfg = Debug|X64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|X64.Build.0 = Debug|X64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|x86.ActiveCfg = Debug|Win32
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|x86.Build.0 = Debug|Win32
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|Gaming.Desktop.x64.ActiveCfg = Release|Gaming.Desktop.x64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|Gaming.Desktop.x64.Build.0 = Release|Gaming.Desktop.x64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|Gaming.Xbox.Scarlett.x64.ActiveCfg = Release|Gaming.Xbox.Scarlett.x64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|Gaming.Xbox.Scarlett.x64.Build.0 = Release|Gaming.Xbox.Scarlett.x64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|Gaming.Xbox.XboxOne.x64.ActiveCfg = Release|Gaming.Xbox.XboxOne.x64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|Gaming.Xbox.XboxOne.x64.Build.0 = Release|Gaming.Xbox.XboxOne.x64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|X64.ActiveCfg = Release|X64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|X64.Build.0 = Release|X64
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|x86.ActiveCfg = Release|Win32
-		{E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|x86.Build.0 = Release|Win32
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
+    GlobalSection(SolutionConfigurationPlatforms) = preSolution
+        Debug|Win32 = Debug|Win32
+        Release|Win32 = Release|Win32
+    EndGlobalSection
+    GlobalSection(ProjectConfigurationPlatforms) = postSolution
+        {E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|Win32.ActiveCfg = Debug|Win32
+        {E639CCBF-F553-4266-8784-0F5CE88692B5}.Debug|Win32.Build.0 = Debug|Win32
+        {E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|Win32.ActiveCfg = Release|Win32
+        {E639CCBF-F553-4266-8784-0F5CE88692B5}.Release|Win32.Build.0 = Release|Win32
+    EndGlobalSection
+    GlobalSection(SolutionProperties) = preSolution
+        HideSolutionNode = FALSE
+    EndGlobalSection
 EndGlobal
