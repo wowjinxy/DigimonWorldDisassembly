@@ -8,6 +8,17 @@
 
 #include <windows.h>
 #include <cstdio>
+// Include <cstdint> to define int16_t and int32_t for the forward
+// declarations of func_401000 and func_401020.  Without this header
+// the compiler will assume the identifiers are implicit ints and
+// produce errors on Windows builds.
+// Include standard integer types.  Visual C++ sometimes
+// requires <stdint.h> instead of <cstdint> when compiling in C++
+// mode, so we include both for maximum compatibility.
+#include <cstdint>
+#include <stdint.h>
+#include <cstdint>
+#include <cstdint>
 
 // Simulated global variables corresponding to locations in the
 // original binary.  The addresses 0x4F4C78 and 0x4F4C7C appear to be
@@ -20,8 +31,13 @@ static int g_flag2 = 0;
 // functions live in functions.cpp and are hooked by MinHook.  We call
 // them from our reconstruction to demonstrate how the original game
 // performs table lookups.  See functions.cpp for details.
-extern "C" int16_t func_401000(int32_t value);
-extern "C" int16_t func_401020(int32_t value);
+//
+// Use built‑in types (short and int) rather than the C99 fixed‑width
+// types here because some Windows build environments do not define
+// int16_t or int32_t in C++ mode.  Both routines take a 32‑bit
+// integer argument and return a sign‑extended 16‑bit result.
+extern "C" short func_401000(int value);
+extern "C" short func_401020(int value);
 
 // -----------------------------------------------------------------------------
 // Inline‑assembly stubs
@@ -105,8 +121,10 @@ static void __stdcall internal_sub_004A1F8A() {
         // a real reconstruction you would likely call other routines
         // referenced by the disassembly at 0x004A1F8A.  Here we use
         // arbitrary arguments to illustrate the mechanics.
-        int16_t result1 = func_401000(0x123);
-        int16_t result2 = func_401020(0x234);
+        // Call the sine lookup functions.  We use the built‑in
+        // 'short' type here to match the forward declarations above.
+        short result1 = func_401000(0x123);
+        short result2 = func_401020(0x234);
         char buf[128];
         std::snprintf(buf, sizeof(buf),
                       "sub_004A1F8A: lookup results = %d, %d\n",
