@@ -3,7 +3,7 @@
 // Definition of the 4 KiB lookup table used by the reconstructed
 // functions.  In the original digi.exe binary, this table contained
 // values produced from a sine curve and was used for gameplay
-// calculations【433935622783790†L0-L8】.  To keep this repository
+// calculations.  To keep this repository
 // lightweight the table below is initialised to all zeros.  Replace
 // this array with the full sine wave extracted from the game for
 // accurate behaviour.

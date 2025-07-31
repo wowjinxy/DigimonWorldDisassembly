@@ -6,12 +6,12 @@
 //
 // This header declares a single function, `InstallHooks()`, which
 // initialises MinHook and installs all configured detours.  See
-// hooks.cpp for the implementation and README.md for usage details【898396427114781†L2-L14】.
+// hooks.cpp for the implementation and README.md for usage details.
 
 #pragma once
 
 // Install all configured hooks.  Call this function from your DLL's
 // entry point or from an injected initialisation routine.  It is
 // safe to call `InstallHooks()` multiple times; repeated calls will
-// simply re‑apply the same patches【898396427114781†L12-L15】.
+// simply re‑apply the same patches.
 void InstallHooks();

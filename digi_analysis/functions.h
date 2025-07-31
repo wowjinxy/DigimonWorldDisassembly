@@ -11,15 +11,15 @@
 
 // Look up a 16‑bit value in the reconstructed table.  This mirrors
 // the behaviour of the routine at address 0x401000.  The input is
-// masked to 12 bits before indexing into the 4096‑entry table【559098899427678†L11-L18】.
+// masked to 12 bits before indexing into the 4096‑entry table.
 extern "C" int16_t func_401000(int32_t value);
 
 // Adds 0x400 to the input, masks to 12 bits and returns the value
-// from the same table.  Mirrors the routine at 0x401020【559098899427678†L16-L18】.
+// from the same table.  Mirrors the routine at 0x401020.
 extern "C" int16_t func_401020(int32_t value);
 
-// Thin wrapper around func_401020 – originally located at 0x401040【559098899427678†L20-L21】.
+// Thin wrapper around func_401020 – originally located at 0x401040.
 extern "C" int16_t func_401040(int32_t value);
 
-// Thin wrapper around func_401000 – originally located at 0x401050【559098899427678†L20-L23】.
+// Thin wrapper around func_401000 – originally located at 0x401050.
 extern "C" int16_t func_401050(int32_t value);

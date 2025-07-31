@@ -2,7 +2,7 @@
 //
 // Declaration of the 4 KiB lookup table extracted from the original
 // digi.exe.  The definitions live in digi_table.cpp and contain
-// 4096 16‑bit signed integers【952462612456350†L0-L13】.
+// 4096 16‑bit signed integers.
 
 #pragma once
 
