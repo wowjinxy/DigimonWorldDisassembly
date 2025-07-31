@@ -48,7 +48,11 @@ static OrigFunc401050 s_orig401050 = nullptr;
 // calling convention and parameters are not yet known, so we treat it
 // as a simple void function.  Adjust this signature once you know the
 // correct prototype【328070431545145†L24-L31】.
-using OrigFunc004A1F8A = void(*)();
+// The original function at 0x004A1F8A appears to use the stdcall
+// convention (no parameters and callee cleans up the stack).  We
+// declare the function pointer accordingly.  If future analysis
+// reveals a different prototype adjust this typedef.
+using OrigFunc004A1F8A = void(__stdcall*)();
 static OrigFunc004A1F8A s_orig004A1F8A = nullptr;
 
 // Detour for 0x401000.  Simply calls our reconstructed function.
@@ -79,13 +83,21 @@ static int16_t __cdecl Detour401050(int32_t value) {
 // s_orig004A1F8A() if you do not want to execute the original
 // behaviour【328070431545145†L38-L48】.
 static void Detour004A1F8A() {
-    // Invoke our C++ implementation.  We do **not** call the original
-    // function here because the calling convention and parameters are
-    // unknown.  Forwarding an unknown calling convention can lead to
-    // stack corruption (Run‑Time Check Failure #0) in debug builds.
-    // If you need to preserve the original behaviour, reconstruct the
-    // correct signature and remove this comment once implemented.
+    // Invoke our C++ implementation.  This performs one‑time
+    // initialisation and logs some diagnostic information.  After
+    // running our code we call through to the original routine to
+    // preserve the game’s behaviour.  Although the exact calling
+    // convention of the target function is not fully documented, it
+    // appears to take no arguments and use the stdcall convention.
+    // If later analysis reveals a different signature you should
+    // update the type definition of OrigFunc004A1F8A accordingly.
     sub_004A1F8A();
+    // Forward to the original implementation.  If the original pointer
+    // is null (which should not occur if the hook was installed
+    // correctly) this call will be skipped.
+    if (s_orig004A1F8A) {
+        s_orig004A1F8A();
+    }
 }
 
 // Installs the hooks for all reconstructed functions.  Additional
