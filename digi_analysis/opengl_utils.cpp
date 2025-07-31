@@ -1,7 +1,11 @@
-// Utility for handling OpenGL rendering within the game's window.
+// Utility for handling OpenGL rendering within the game's window and for
+// transferring draw data from the Direct3D emulation layer to the
+// render thread.
 
 #include "opengl_utils.h"
+#include "d3d8_gl_bridge.h"
 #include <GL/gl.h>
+#include <mutex>
 
 namespace {
     bool    g_OpenGLWindowCreated = false;
@@ -14,6 +18,17 @@ namespace {
     int     g_width               = 0;
     int     g_height              = 0;
     bool    g_resizePending       = false;
+
+    // Draw call queues.  The game thread submits into g_frameQueue.
+    // PresentFrame() promotes the data into g_renderQueue which the
+    // render thread consumes.
+    std::mutex              g_drawMutex;
+    std::vector<PendingDraw> g_frameQueue;
+    std::vector<PendingDraw> g_renderQueue;
+
+    // Clear state passed between threads.
+    bool  g_clearRequested = false;
+    float g_clearR = 0.f, g_clearG = 0.f, g_clearB = 0.f;
 
     BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
         DWORD pid = 0;
@@ -47,23 +62,59 @@ namespace {
 
     DWORD WINAPI RenderThread(LPVOID) {
         wglMakeCurrent(g_hDCGL, g_hGLRC);
-        typedef void (APIENTRY* PFNGLCLEARCOLORPROC)(float, float, float, float);
-        typedef void (APIENTRY* PFNGLCLEARPROC)(unsigned int);
+        glEnable(GL_TEXTURE_2D);
         typedef void (APIENTRY* PFNGLVIEWPORTPROC)(int, int, int, int);
-        PFNGLCLEARCOLORPROC pglClearColor = (PFNGLCLEARCOLORPROC)wglGetProcAddress("glClearColor");
-        PFNGLCLEARPROC      pglClear      = (PFNGLCLEARPROC)wglGetProcAddress("glClear");
-        PFNGLVIEWPORTPROC   pglViewport   = (PFNGLVIEWPORTPROC)wglGetProcAddress("glViewport");
+        PFNGLVIEWPORTPROC pglViewport = (PFNGLVIEWPORTPROC)wglGetProcAddress("glViewport");
         while (g_running) {
             if (g_resizePending && pglViewport) {
                 pglViewport(0, 0, g_width, g_height);
                 g_resizePending = false;
             }
-            if (pglClearColor && pglClear) {
-                pglClearColor(0.1f, 0.2f, 0.3f, 1.0f);
-                pglClear(GL_COLOR_BUFFER_BIT);
+
+            std::vector<PendingDraw> localQueue;
+            bool doClear = false; float cr = 0, cg = 0, cb = 0;
+            {
+                std::lock_guard<std::mutex> lock(g_drawMutex);
+                localQueue = std::move(g_renderQueue);
+                g_renderQueue.clear();
+                doClear = g_clearRequested;
+                cr = g_clearR; cg = g_clearG; cb = g_clearB;
+                g_clearRequested = false;
             }
+
+            if (doClear) {
+                glClearColor(cr, cg, cb, 1.0f);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            }
+
+            for (auto& draw : localQueue) {
+                if (draw.texture) {
+                    draw.texture->Upload();
+                    glBindTexture(GL_TEXTURE_2D, draw.texture->GetGLTexture());
+                } else {
+                    glBindTexture(GL_TEXTURE_2D, 0);
+                }
+
+                glBegin(draw.mode);
+                if (!draw.indices.empty()) {
+                    for (auto idx : draw.indices) {
+                        const float* v = &draw.vertices[idx * 5];
+                        glTexCoord2f(v[3], v[4]);
+                        glVertex3f(v[0], v[1], v[2]);
+                    }
+                } else {
+                    size_t vcount = draw.vertices.size() / 5;
+                    for (size_t i = 0; i < vcount; ++i) {
+                        const float* v = &draw.vertices[i * 5];
+                        glTexCoord2f(v[3], v[4]);
+                        glVertex3f(v[0], v[1], v[2]);
+                    }
+                }
+                glEnd();
+            }
+
             SwapBuffers(g_hDCGL);
-            Sleep(16);
+            Sleep(1);
         }
         wglMakeCurrent(nullptr, nullptr);
         return 0;
@@ -171,4 +222,21 @@ void ShutdownOpenGL() {
 
     g_hWndGL              = nullptr;
     g_OpenGLWindowCreated = false;
+}
+
+void SubmitDrawCall(PendingDraw&& draw) {
+    std::lock_guard<std::mutex> lock(g_drawMutex);
+    g_frameQueue.push_back(std::move(draw));
+}
+
+void EnqueueClear(float r, float g, float b) {
+    std::lock_guard<std::mutex> lock(g_drawMutex);
+    g_clearRequested = true;
+    g_clearR = r; g_clearG = g; g_clearB = b;
+}
+
+void PresentFrame() {
+    std::lock_guard<std::mutex> lock(g_drawMutex);
+    g_renderQueue = std::move(g_frameQueue);
+    g_frameQueue.clear();
 }
