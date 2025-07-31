@@ -4,7 +4,7 @@
 // reconstruction.  This version uses the MinHook library instead of
 // manually writing relative jumps.  MinHook simplifies creation and
 // management of multiple hooks and preserves original function
-// pointers so you can call into the game as needed【328070431545145†L33-L70】.
+// pointers so you can call into the game as needed.
 
 #include "hooks.h"
 #include <windows.h>
@@ -29,7 +29,7 @@ static OrigFunc401000 s_orig401000 = nullptr;
 // Type definition for the original function at 0x401020.  This routine
 // adds 0x400 to its argument before indexing the sine table.  We hook
 // it separately so that we can log or adjust its behaviour without
-// affecting the wrappers.【559098899427678†L16-L18】
+// affecting the wrappers.
 using OrigFunc401020 = int16_t(__cdecl*)(int32_t);
 static OrigFunc401020 s_orig401020 = nullptr;
 
@@ -47,7 +47,7 @@ static OrigFunc401050 s_orig401050 = nullptr;
 // Type definition for the original function at 0x004A1F8A.  The exact
 // calling convention and parameters are not yet known, so we treat it
 // as a simple void function.  Adjust this signature once you know the
-// correct prototype【328070431545145†L24-L31】.
+// correct prototype.
 // The original function at 0x004A1F8A appears to use the stdcall
 // convention (no parameters and callee cleans up the stack).  We
 // declare the function pointer accordingly.  If future analysis
@@ -88,11 +88,14 @@ using OrigFunc00492EFF = int(__thiscall*)(void*, int*, LOGFONTA*);
 static OrigFunc00492EFF s_orig00492EFF = nullptr;
 
 // 0x00495AE4: FreeTextSurfaceResources(int param1) -> void
-using OrigFunc00495AE4 = void(__fastcall*)(int);
+// __fastcall uses ECX/EDX for the first two parameters even when only
+// one is used.  Include a placeholder for the unused EDX slot so our
+// detour matches the original calling convention.
+using OrigFunc00495AE4 = void(__fastcall*)(int, void*);
 static OrigFunc00495AE4 s_orig00495AE4 = nullptr;
 
 // 0x00495DEB: RestoreSelectedGDIObject(int param1) -> int
-using OrigFunc00495DEB = int(__fastcall*)(int);
+using OrigFunc00495DEB = int(__fastcall*)(int, void*);
 static OrigFunc00495DEB s_orig00495DEB = nullptr;
 
 // 0x00486730: ExtractAndProcessFontMetrics(int* fontMetricsArray, HANDLE currentHandle,
@@ -137,16 +140,16 @@ static int __fastcall Detour00492EFF(void* _this, void* /*not used*/, int* param
     return s_orig00492EFF ? s_orig00492EFF(_this, param1, param2) : -1;
 }
 
-static void __fastcall Detour00495AE4(int param1) {
+static void __fastcall Detour00495AE4(int param1, void* unused) {
     OutputDebugStringA("Detour00495AE4: FreeTextSurfaceResources called\n");
     if (s_orig00495AE4) {
-        s_orig00495AE4(param1);
+        s_orig00495AE4(param1, unused);
     }
 }
 
-static int __fastcall Detour00495DEB(int param1) {
+static int __fastcall Detour00495DEB(int param1, void* unused) {
     OutputDebugStringA("Detour00495DEB: RestoreSelectedGDIObject called\n");
-    return s_orig00495DEB ? s_orig00495DEB(param1) : 0;
+    return s_orig00495DEB ? s_orig00495DEB(param1, unused) : 0;
 }
 
 static int Detour00486730(int* fontMetricsArray, HANDLE currentHandle, void** fontMetricsArrayPtr) {
@@ -187,7 +190,7 @@ static int16_t __cdecl Detour401050(int32_t value) {
 // Detour for 0x004A1F8A.  Calls our stub implementation and then
 // optionally calls the original function.  Remove the call to
 // s_orig004A1F8A() if you do not want to execute the original
-// behaviour【328070431545145†L38-L48】.
+// behaviour.
 static void Detour004A1F8A() {
     // Invoke our C++ implementation.  This performs one‑time
     // initialisation and logs some diagnostic information.  After
@@ -208,7 +211,7 @@ static void Detour004A1F8A() {
 
 // Installs the hooks for all reconstructed functions.  Additional
 // functions can be hooked by repeating the call to MH_CreateHook
-// with the appropriate addresses【328070431545145†L51-L69】.
+// with the appropriate addresses.
 void InstallHooks() {
     // Initialise the hooking library.  Ignore errors for repeated
     // initialisation; MH_Initialize will return MH_ERROR_ALREADY_INITIALIZED

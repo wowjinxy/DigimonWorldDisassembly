@@ -45,7 +45,7 @@ includes:
   This version uses [MinHook](https://github.com/TsudaKageyu/minhook)
   instead of manually writing relative jumps; MinHook simplifies
   creation and management of multiple hooks and preserves original
-  function pointers so you can call into the game as needed【202001143219462†L36-L90】.
+  function pointers so you can call into the game as needed.
 
 * **third_party/minhook/** – A vendored copy of the MinHook library.
   Only the source and header files are included; you will need to
@@ -56,7 +56,7 @@ includes:
   disassembly listing for the routine at address `0x004A1F8A` in the
   original game.  The C++ stub simply emits a debug message so that
   you can verify the hook is firing.  Replace the body of this function
-  as you reverse‑engineer the real behaviour【283813931668633†L0-L14】.
+  as you reverse‑engineer the real behaviour.
 
 * **digi_analysis.sln / digi_analysis.vcxproj** – Visual Studio
   solution and project files configured for building a Win32 DLL.
@@ -84,7 +84,7 @@ If you are working on a non‑Windows host, it is possible to build the
 code with MinGW or cross‑compile using a toolchain like
 `x86_64‑w64‑mingw32`, provided you supply Windows headers.  Note
 however that the current entry points use Win32 functions to
-demonstrate functionality【202001143219462†L64-L85】.
+demonstrate functionality.
 
 ## Hooking the original executable
 
@@ -96,4 +96,4 @@ disabling hooks, and it can automatically preserve the original
 function pointers so you can call back into the game when necessary.
 The stub `sub_004A1F8A.cpp` shows how to implement a detour for a new
 function: log or inspect arguments, then invoke the original behaviour
-through the saved pointer【328070431545145†L33-L70】.
+through the saved pointer.

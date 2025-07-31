@@ -3,7 +3,7 @@
 // This file contains hand‑reconstructed C functions that approximate
 // the behaviour of some of the simple routines at the very beginning
 // of digi.exe.  Each function operates on an integer input and looks
-// up a 16‑bit value in a table extracted from the game binary【640324667076106†L12-L20】.
+// up a 16‑bit value in a table extracted from the game binary.
 //
 // In this updated version the functions at 0x401000 and 0x401020 are
 // implemented using inline x86 assembly.  This more closely mirrors
@@ -57,12 +57,12 @@ extern "C" __declspec(naked) int16_t func_401020(int32_t value) {
     }
 }
 
-// Corresponds to the wrapper at 0x401040 which simply calls 0x401020【640324667076106†L28-L31】.
+// Corresponds to the wrapper at 0x401040 which simply calls 0x401020.
 extern "C" int16_t func_401040(int32_t value) {
     return func_401020(value);
 }
 
-// Corresponds to the wrapper at 0x401050 which simply calls 0x401000【640324667076106†L33-L35】.
+// Corresponds to the wrapper at 0x401050 which simply calls 0x401000.
 extern "C" int16_t func_401050(int32_t value) {
     return func_401000(value);
 }
