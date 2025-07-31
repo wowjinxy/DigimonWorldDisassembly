@@ -1,7 +1,7 @@
-// Proxy DLL originally designed to wrap DirectX 8.  This version strips
-// out the Direct3D forwarding code and instead boots a minimal OpenGL
-// context.  The DLL still installs runtime hooks and the No‑CD patch but
-// no longer loads or delegates to the original D3D8 library.
+// Proxy DLL originally designed to wrap DirectX 8.  This version forwards to
+// the system D3D8 implementation but intercepts draw calls and mirrors them to
+// a simple OpenGL renderer.  The DLL still installs runtime hooks and the
+// No‑CD patch.
 
 #include <windows.h>
 #include "hooks.h"
@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <cstring>
 #include "opengl_utils.h"
+#include "d3d_capture.h"
 
 // Apply an in‑memory patch to bypass the CD check.  The patch data
 // and offsets were extracted from the original project.  On success
@@ -38,57 +39,40 @@ static void ApplyNoCD() {
         }
     }
 }
-// All OpenGL initialisation lives in opengl_utils.cpp.  This file now
-// focuses purely on setting up hooks and exporting a replacement
-// Direct3DCreate8 entry point.
 
 // -----------------------------------------------------------------------------
-// Custom implementation of Direct3DCreate8
+// Direct3DCreate8 proxy
 //
-// When the game calls Direct3DCreate8 it expects to receive a pointer to
-// an IDirect3D8 interface.  To allow us to replace the DirectX renderer
-// with an OpenGL implementation we provide our own exported version of
-// Direct3DCreate8 here.  This function logs that it has been invoked
-// and can perform any initialisation required for an OpenGL context.
-// After performing its work it returns nullptr to signal that the
-// original Direct3D path is unavailable.  All rendering should be
-// performed via the OpenGL context initialised inside this function.
+// We forward to the system D3D8 library to obtain a real IDirect3D8 interface.
+// After creation we hook CreateDevice so we can intercept draw calls and mirror
+// them to OpenGL.  The OpenGL context is initialised on first invocation.
+// -----------------------------------------------------------------------------
+extern "C" __declspec(dllexport) IDirect3D8* WINAPI Direct3DCreate8(UINT sdkVersion) {
+    OutputDebugStringA("Direct3DCreate8 called – installing D3D hooks\n");
 
-// Forward declaration of the Direct3D 8 interface.  We continue to
-// declare it opaquely so callers can compile against this header
-// without the full DirectX SDK.
-struct IDirect3D8;
-
-// Exported Direct3DCreate8 replacement.  This function is exported from
-// our DLL under both the decorated and undecorated names via the linker
-// directive above.  It initialises an OpenGL backend and returns nullptr
-// to indicate that the original Direct3D implementation is absent.
-extern "C" __declspec(dllexport) IDirect3D8* WINAPI Direct3DCreate8(UINT /*sdkVersion*/) {
-    // Log that our replacement has been called.  Use OutputDebugStringA so
-    // that messages appear in the debugger without popping up a MessageBox.
-    OutputDebugStringA("Direct3DCreate8 called – OpenGL backend active\n");
-
-    // Initialise the OpenGL context.  If this fails we simply report that
-    // Direct3D is unavailable by returning nullptr.
-    if (!InitOpenGL()) {
+    HMODULE d3d8 = LoadLibraryA("d3d8.dll");
+    if (!d3d8) {
+        return nullptr;
+    }
+    using PFN_Direct3DCreate8 = IDirect3D8* (WINAPI*)(UINT);
+    PFN_Direct3DCreate8 realCreate =
+        reinterpret_cast<PFN_Direct3DCreate8>(GetProcAddress(d3d8, "Direct3DCreate8"));
+    if (!realCreate) {
         return nullptr;
     }
 
-    // No Direct3D implementation is provided; returning nullptr informs the
-    // caller that the traditional Direct3D path is disabled.  All rendering
-    // should now be performed via the OpenGL context created above.
-    return nullptr;
+    IDirect3D8* d3d = realCreate(sdkVersion);
+    if (d3d) {
+        InstallD3DCreateDeviceHook(d3d);
+        InitOpenGL();
+    }
+    return d3d;
 }
 
-// Export our custom Direct3DCreate8 function under its undecorated name.
-// Without this directive the compiler will export it only under the
-// decorated symbol `_Direct3DCreate8@4`, which will not satisfy the
-// game's import table.
 #pragma comment(linker, "/export:Direct3DCreate8=_Direct3DCreate8@4")
 
 // DLL entry point.  On process attach we install hooks and apply the
-// No‑CD patch.  On detach we remove hooks.  The original Direct3D8
-// library is no longer loaded.
+// No‑CD patch.  On detach we remove hooks and shut down the OpenGL thread.
 BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
     case DLL_PROCESS_ATTACH:
