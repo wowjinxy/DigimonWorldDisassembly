@@ -39,18 +39,9 @@ static void ApplyNoCD() {
         }
     }
 }
-// All OpenGL initialisation lives in opengl_utils.cpp.  This file now
-// focuses purely on setting up hooks and exporting a replacement
-// Direct3DCreate8 entry point.
 
-// -----------------------------------------------------------------------------
-// Custom implementation of Direct3DCreate8
-//
-// When the game calls Direct3DCreate8 it expects to receive a pointer to
-// an IDirect3D8 interface.  Our implementation now constructs a small
-// COM‑style stub that translates only the handful of methods exercised by
-// the game into OpenGL calls.  Additional Direct3D functionality is not
-// emulated.
+// Forward declaration for InstallHooks function
+void InstallHooks();
 
 // Exported Direct3DCreate8 replacement.  This function is exported from
 // our DLL under both the decorated and undecorated names via the linker
@@ -73,6 +64,10 @@ extern "C" __declspec(dllexport) IDirect3D8* WINAPI Direct3DCreate8(UINT /*sdkVe
 BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
     case DLL_PROCESS_ATTACH:
+        // Initialize MinHook
+        if (MH_Initialize() != MH_OK) {
+            return FALSE;
+        }
         InstallHooks();
         ApplyNoCD();
         break;

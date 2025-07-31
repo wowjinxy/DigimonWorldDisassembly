@@ -4,6 +4,7 @@
 
 #include "opengl_utils.h"
 #include "d3d8_gl_bridge.h"
+#include <GL/gl.h>
 #include <mutex>
 
 namespace {
@@ -62,16 +63,17 @@ namespace {
     DWORD WINAPI RenderThread(LPVOID) {
         wglMakeCurrent(g_hDCGL, g_hGLRC);
         glEnable(GL_TEXTURE_2D);
-        typedef void (APIENTRY* PFNGLVIEWPORTPROC)(int, int, int, int);
-        PFNGLVIEWPORTPROC pglViewport = (PFNGLVIEWPORTPROC)wglGetProcAddress("glViewport");
+        
         while (g_running) {
-            if (g_resizePending && pglViewport) {
-                pglViewport(0, 0, g_width, g_height);
+            if (g_resizePending) {
+                glViewport(0, 0, g_width, g_height);
                 g_resizePending = false;
             }
 
             std::vector<PendingDraw> localQueue;
-            bool doClear = false; float cr = 0, cg = 0, cb = 0;
+            bool doClear = false; 
+            float cr = 0, cg = 0, cb = 0;
+            
             {
                 std::lock_guard<std::mutex> lock(g_drawMutex);
                 localQueue = std::move(g_renderQueue);
@@ -94,76 +96,29 @@ namespace {
                     glBindTexture(GL_TEXTURE_2D, 0);
                 }
 
-                // Apply render state
-                if (draw.state.alphaBlend)
-                    glEnable(GL_BLEND);
-                else
-                    glDisable(GL_BLEND);
-                if (draw.state.depthTest)
-                    glEnable(GL_DEPTH_TEST);
-                else
-                    glDisable(GL_DEPTH_TEST);
-
-                // Apply transforms
-                glMatrixMode(GL_PROJECTION);
-                glLoadMatrixf(draw.projection);
-                glMatrixMode(GL_MODELVIEW);
-                glLoadMatrixf(draw.view);
-                glMultMatrixf(draw.world);
-
-                if (draw.vertexBuffer) {
-                    draw.vertexBuffer->Upload();
-                    glBindBuffer(GL_ARRAY_BUFFER, draw.vertexBuffer->GetGLBuffer());
-                    glEnableClientState(GL_VERTEX_ARRAY);
-                    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                    glVertexPointer(3, GL_FLOAT, draw.stride,
-                                    (void*)(static_cast<size_t>(draw.startVertex) * draw.stride));
-                    glTexCoordPointer(2, GL_FLOAT, draw.stride,
-                                      (void*)(static_cast<size_t>(draw.startVertex) * draw.stride + 3 * sizeof(float)));
-                    if (draw.indexBuffer) {
-                        draw.indexBuffer->Upload();
-                        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, draw.indexBuffer->GetGLBuffer());
-                        glDrawElements(draw.mode, draw.indexCount, GL_UNSIGNED_SHORT,
-                                       (void*)(static_cast<size_t>(draw.startIndex) * sizeof(unsigned short)));
-                        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-                    } else {
-                        glDrawArrays(draw.mode, draw.startVertex, draw.vertexCount);
+                glBegin(draw.mode);
+                if (!draw.indices.empty()) {
+                    for (auto idx : draw.indices) {
+                        if (idx * 5 + 4 < draw.vertices.size()) {
+                            const float* v = &draw.vertices[idx * 5];
+                            glTexCoord2f(v[3], v[4]);
+                            glVertex3f(v[0], v[1], v[2]);
+                        }
                     }
-                    glBindBuffer(GL_ARRAY_BUFFER, 0);
-                    glDisableClientState(GL_VERTEX_ARRAY);
-                    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
                 } else {
-                    // Temporary buffers for UP draws
-                    GLuint tempVBO = 0;
-                    glGenBuffers(1, &tempVBO);
-                    glBindBuffer(GL_ARRAY_BUFFER, tempVBO);
-                    glBufferData(GL_ARRAY_BUFFER, draw.vertices.size() * sizeof(float), draw.vertices.data(), GL_STATIC_DRAW);
-                    glEnableClientState(GL_VERTEX_ARRAY);
-                    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                    UINT stride = draw.stride ? draw.stride : 5 * sizeof(float);
-                    glVertexPointer(3, GL_FLOAT, stride, (void*)(static_cast<size_t>(draw.startVertex) * stride));
-                    glTexCoordPointer(2, GL_FLOAT, stride,
-                                      (void*)(static_cast<size_t>(draw.startVertex) * stride + 3 * sizeof(float)));
-                    if (!draw.indices.empty()) {
-                        GLuint tempIBO = 0;
-                        glGenBuffers(1, &tempIBO);
-                        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tempIBO);
-                        glBufferData(GL_ELEMENT_ARRAY_BUFFER, draw.indices.size() * sizeof(unsigned short), draw.indices.data(), GL_STATIC_DRAW);
-                        glDrawElements(draw.mode, draw.indices.size(), GL_UNSIGNED_SHORT,
-                                       (void*)(static_cast<size_t>(draw.startIndex) * sizeof(unsigned short)));
-                        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-                        glDeleteBuffers(1, &tempIBO);
-                    } else {
-                        glDrawArrays(draw.mode, draw.startVertex, draw.vertexCount ? draw.vertexCount : draw.vertices.size() / 5);
+                    size_t vcount = draw.vertices.size() / 5;
+                    for (size_t i = 0; i < vcount; ++i) {
+                        const float* v = &draw.vertices[i * 5];
+                        glTexCoord2f(v[3], v[4]);
+                        glVertex3f(v[0], v[1], v[2]);
                     }
-                    glBindBuffer(GL_ARRAY_BUFFER, 0);
-                    glDisableClientState(GL_VERTEX_ARRAY);
-                    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-                    glDeleteBuffers(1, &tempVBO);
                 }
+                glEnd();
             }
 
-            SwapBuffers(g_hDCGL);
+            if (g_hDCGL) {
+                SwapBuffers(g_hDCGL);
+            }
             Sleep(1);
         }
         wglMakeCurrent(nullptr, nullptr);
@@ -196,6 +151,7 @@ bool InitOpenGL() {
     pfd.cDepthBits   = 24;
     pfd.cStencilBits = 8;
     pfd.iLayerType   = PFD_MAIN_PLANE;
+    
     int pf = ChoosePixelFormat(g_hDCGL, &pfd);
     if (pf == 0) {
         ReleaseDC(g_hWndGL, g_hDCGL);
@@ -203,6 +159,7 @@ bool InitOpenGL() {
         g_hDCGL = nullptr;
         return false;
     }
+    
     if (!SetPixelFormat(g_hDCGL, pf, &pfd)) {
         ReleaseDC(g_hWndGL, g_hDCGL);
         g_hWndGL = nullptr;
