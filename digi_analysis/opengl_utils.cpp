@@ -18,6 +18,7 @@ namespace {
     int     g_width               = 0;
     int     g_height              = 0;
     bool    g_resizePending       = false;
+    bool    g_fallbackWindowCreated = false;
 
     // Draw call queues.  The game thread submits into g_frameQueue.
     // PresentFrame() promotes the data into g_renderQueue which the
@@ -131,13 +132,42 @@ bool InitOpenGL() {
         return true;
     }
 
-    g_hWndGL = FindGameWindow();
+    // Try to locate the game's window first.  It may not be ready when
+    // the device is created, so wait a bit and retry.
+    const int kMaxRetries = 50;
+    for (int i = 0; i < kMaxRetries && !g_hWndGL; ++i) {
+        g_hWndGL = FindGameWindow();
+        if (!g_hWndGL) {
+            Sleep(100);
+        }
+    }
+
+    // If the window still isn't available, create a tiny hidden fallback
+    // window so OpenGL can be initialised and the device creation can
+    // succeed.  This ensures we only fail for genuine initialisation
+    // errors and not simply because the real window wasn't ready.
     if (!g_hWndGL) {
-        return false;
+        WNDCLASSA wc = {};
+        wc.lpfnWndProc   = DefWindowProcA;
+        wc.hInstance     = GetModuleHandle(nullptr);
+        wc.lpszClassName = "DWGLFallback";
+        RegisterClassA(&wc);
+        g_hWndGL = CreateWindowExA(0, wc.lpszClassName, "DWGL", WS_OVERLAPPEDWINDOW,
+                                   CW_USEDEFAULT, CW_USEDEFAULT, 1, 1,
+                                   nullptr, nullptr, wc.hInstance, nullptr);
+        if (!g_hWndGL) {
+            return false;
+        }
+        g_fallbackWindowCreated = true;
+        ShowWindow(g_hWndGL, SW_HIDE);
     }
 
     g_hDCGL = GetDC(g_hWndGL);
     if (!g_hDCGL) {
+        if (g_fallbackWindowCreated) {
+            DestroyWindow(g_hWndGL);
+            g_fallbackWindowCreated = false;
+        }
         g_hWndGL = nullptr;
         return false;
     }
@@ -155,23 +185,35 @@ bool InitOpenGL() {
     int pf = ChoosePixelFormat(g_hDCGL, &pfd);
     if (pf == 0) {
         ReleaseDC(g_hWndGL, g_hDCGL);
-        g_hWndGL = nullptr;
         g_hDCGL = nullptr;
+        if (g_fallbackWindowCreated) {
+            DestroyWindow(g_hWndGL);
+            g_fallbackWindowCreated = false;
+        }
+        g_hWndGL = nullptr;
         return false;
     }
     
     if (!SetPixelFormat(g_hDCGL, pf, &pfd)) {
         ReleaseDC(g_hWndGL, g_hDCGL);
-        g_hWndGL = nullptr;
         g_hDCGL = nullptr;
+        if (g_fallbackWindowCreated) {
+            DestroyWindow(g_hWndGL);
+            g_fallbackWindowCreated = false;
+        }
+        g_hWndGL = nullptr;
         return false;
     }
 
     g_hGLRC = wglCreateContext(g_hDCGL);
     if (!g_hGLRC) {
         ReleaseDC(g_hWndGL, g_hDCGL);
-        g_hWndGL = nullptr;
         g_hDCGL = nullptr;
+        if (g_fallbackWindowCreated) {
+            DestroyWindow(g_hWndGL);
+            g_fallbackWindowCreated = false;
+        }
+        g_hWndGL = nullptr;
         return false;
     }
 
@@ -188,11 +230,15 @@ bool InitOpenGL() {
     if (!g_renderThread) {
         g_running = false;
         wglDeleteContext(g_hGLRC);
+        g_hGLRC = nullptr;
         ReleaseDC(g_hWndGL, g_hDCGL);
+        g_hDCGL = nullptr;
         SetWindowLongPtrA(g_hWndGL, GWLP_WNDPROC, (LONG_PTR)g_originalWndProc);
         g_originalWndProc = nullptr;
-        g_hGLRC = nullptr;
-        g_hDCGL = nullptr;
+        if (g_fallbackWindowCreated) {
+            DestroyWindow(g_hWndGL);
+            g_fallbackWindowCreated = false;
+        }
         g_hWndGL = nullptr;
         return false;
     }
@@ -225,6 +271,11 @@ void ShutdownOpenGL() {
     if (g_hDCGL && g_hWndGL) {
         ReleaseDC(g_hWndGL, g_hDCGL);
         g_hDCGL = nullptr;
+    }
+
+    if (g_fallbackWindowCreated && g_hWndGL) {
+        DestroyWindow(g_hWndGL);
+        g_fallbackWindowCreated = false;
     }
 
     g_hWndGL              = nullptr;
