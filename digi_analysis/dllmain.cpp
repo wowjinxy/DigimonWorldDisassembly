@@ -48,7 +48,7 @@ void InstallHooks();
 // directive above.  It simply allocates the bridge object and returns it
 // to the caller.
 extern "C" __declspec(dllexport) IDirect3D8* WINAPI Direct3DCreate8(UINT /*sdkVersion*/) {
-    OutputDebugStringA("Direct3DCreate8 called – OpenGL backend active\n");
+    OutputDebugStringA("Direct3DCreate8 called - OpenGL backend active\n");
     return new IDirect3D8();
 }
 
