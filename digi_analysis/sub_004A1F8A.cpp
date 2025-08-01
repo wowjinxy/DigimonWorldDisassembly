@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <cstdint>
 #include <cstdint>
+#include "logger.h"
 
 // Simulated global variables corresponding to locations in the
 // original binary.  The addresses 0x4F4C78 and 0x4F4C7C appear to be
@@ -70,10 +71,11 @@ extern "C" __declspec(naked) void __stdcall CallStubA(int /*param*/) {
         push ebp
         mov ebp, esp
         // Push the address of our message onto the stack and call
-        // OutputDebugStringA.  Because OutputDebugStringA uses the
-        // stdcall convention the callee will pop its own argument.
+        // Send the message through the logging system.  Log uses the
+        // cdecl convention so we clean up the stack after the call.
         push offset kMsgStubA
-        call OutputDebugStringA
+        call Log
+        add esp, 4
         // Clean up the stack frame and return, removing the one
         // integer argument passed to this function (4 bytes).
         mov esp, ebp
@@ -91,7 +93,8 @@ extern "C" __declspec(naked) void __stdcall CallStubB(void) {
         push ebp
         mov ebp, esp
         push offset kMsgStubB
-        call OutputDebugStringA
+        call Log
+        add esp, 4
         mov esp, ebp
         pop ebp
         ret
@@ -129,18 +132,18 @@ static void __stdcall internal_sub_004A1F8A() {
         std::snprintf(buf, sizeof(buf),
                       "sub_004A1F8A: lookup results = %d, %d\n",
                       result1, result2);
-        OutputDebugStringA(buf);
+        Log("%s", buf);
         // Call our inline‑assembly stubs.  The original function
         // pushes 2 before calling the first routine.  We preserve
         // that behaviour here.
         CallStubA(2);
         CallStubB();
-        OutputDebugStringA("sub_004A1F8A: initialisation complete\n");
+        Log("sub_004A1F8A: initialisation complete\n");
     } else {
         // Subsequent calls simply log that the routine has already
         // executed.  This mirrors the fact that the real code does
         // nothing on subsequent invocations once its state is set up.
-        OutputDebugStringA("sub_004A1F8A: already initialised\n");
+        Log("sub_004A1F8A: already initialised\n");
     }
 }
 

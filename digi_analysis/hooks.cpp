@@ -12,6 +12,7 @@
 #include <vector>
 #include "functions.h"
 #include "text_renderer.h"
+#include "logger.h"
 
 // Forward declaration of our stub for 0x004A1F8A.  Defined in
 // sub_004A1F8A.cpp.  The calling convention is __stdcall to match
@@ -115,20 +116,20 @@ static OrigFunc00429170 s_orig00429170 = nullptr;
 // behaviour to OpenGL.  For now we leave the behaviour unchanged.
 
 static void __cdecl Detour00428EE0(int* fontMetricsArray) {
-    OutputDebugStringA("Detour00428EE0: ProcessFontsAndMetrics called\n");
+    Log("Detour00428EE0: ProcessFontsAndMetrics called\n");
     if (s_orig00428EE0) {
         s_orig00428EE0(fontMetricsArray);
     }
 }
 
 static int __fastcall Detour00495E1A(void* _this, void* /*not used*/, int* param1) {
-    OutputDebugStringA("Detour00495E1A: CreateTextRenderSurface called\n");
+    Log("Detour00495E1A: CreateTextRenderSurface called\n");
     return s_orig00495E1A ? s_orig00495E1A(_this, param1) : -1;
 }
 
 static unsigned int* __fastcall Detour00495F5B(void* _this, void* /*not used*/, unsigned int* a1, unsigned int* a2, unsigned int a3,
                                         int* a4, UINT a5, unsigned int a6, const wchar_t* a7) {
-    OutputDebugStringA("Detour00495F5B: RenderText called\n");
+    Log("Detour00495F5B: RenderText called\n");
     if (!a7) {
         return a1;
     }
@@ -142,34 +143,34 @@ static unsigned int* __fastcall Detour00495F5B(void* _this, void* /*not used*/, 
 }
 
 static int __fastcall Detour0040EA40(void* _this, void* /*not used*/, int param) {
-    OutputDebugStringA("Detour0040EA40: CDWWnd::PreCreateWindow called\n");
+    Log("Detour0040EA40: CDWWnd::PreCreateWindow called\n");
     return s_orig0040EA40 ? s_orig0040EA40(_this, param) : 0;
 }
 
 static int __fastcall Detour00492EFF(void* _this, void* /*not used*/, int* param1, LOGFONTA* param2) {
-    OutputDebugStringA("Detour00492EFF: TextRenderState::Initialize called\n");
+    Log("Detour00492EFF: TextRenderState::Initialize called\n");
     return s_orig00492EFF ? s_orig00492EFF(_this, param1, param2) : -1;
 }
 
 static void __fastcall Detour00495AE4(int param1, void* unused) {
-    OutputDebugStringA("Detour00495AE4: FreeTextSurfaceResources called\n");
+    Log("Detour00495AE4: FreeTextSurfaceResources called\n");
     if (s_orig00495AE4) {
         s_orig00495AE4(param1, unused);
     }
 }
 
 static int __fastcall Detour00495DEB(int param1, void* unused) {
-    OutputDebugStringA("Detour00495DEB: RestoreSelectedGDIObject called\n");
+    Log("Detour00495DEB: RestoreSelectedGDIObject called\n");
     return s_orig00495DEB ? s_orig00495DEB(param1, unused) : 0;
 }
 
 static int Detour00486730(int* fontMetricsArray, HANDLE currentHandle, void** fontMetricsArrayPtr) {
-    OutputDebugStringA("Detour00486730: ExtractAndProcessFontMetrics called\n");
+    Log("Detour00486730: ExtractAndProcessFontMetrics called\n");
     return s_orig00486730 ? s_orig00486730(fontMetricsArray, currentHandle, fontMetricsArrayPtr) : -1;
 }
 
 static void __fastcall Detour00429170(void* _this, void* /*not used*/, unsigned int param1, int param2, unsigned int param3) {
-    OutputDebugStringA("Detour00429170: MeasureStringDimensions called\n");
+    Log("Detour00429170: MeasureStringDimensions called\n");
     if (s_orig00429170) {
         s_orig00429170(_this, param1, param2, param3);
     }
@@ -231,17 +232,23 @@ void InstallHooks() {
     if (status != MH_OK && status != MH_ERROR_ALREADY_INITIALIZED) {
         return;
     }
+    Log("InstallHooks: creating hooks\n");
     // Create a hook for 0x401000.  On success the original pointer
     // will be stored in s_orig401000.
     MH_CreateHook(reinterpret_cast<void*>(0x401000), reinterpret_cast<void*>(&Detour401000), reinterpret_cast<void**>(&s_orig401000));
+    Log("Hook installed at 0x401000\n");
     // Create a hook for 0x401020 as well.  This allows you to intercept
     // calls to the second sine lookup routine.
     MH_CreateHook(reinterpret_cast<void*>(0x401020), reinterpret_cast<void*>(&Detour401020), reinterpret_cast<void**>(&s_orig401020));
+    Log("Hook installed at 0x401020\n");
     // Create hooks for the simple wrapper functions at 0x401040 and 0x401050.
     MH_CreateHook(reinterpret_cast<void*>(0x401040), reinterpret_cast<void*>(&Detour401040), reinterpret_cast<void**>(&s_orig401040));
+    Log("Hook installed at 0x401040\n");
     MH_CreateHook(reinterpret_cast<void*>(0x401050), reinterpret_cast<void*>(&Detour401050), reinterpret_cast<void**>(&s_orig401050));
+    Log("Hook installed at 0x401050\n");
     // Create a hook for the new function at 0x004A1F8A.
     MH_CreateHook(reinterpret_cast<void*>(0x004A1F8A), reinterpret_cast<void*>(&Detour004A1F8A), reinterpret_cast<void**>(&s_orig004A1F8A));
+    Log("Hook installed at 0x004A1F8A\n");
     // ---------------------------------------------------------------------
     // Install hooks for text and font processing functions.  These
     // addresses are taken from the disassembly provided by the user.  Each
@@ -250,17 +257,26 @@ void InstallHooks() {
     // understand the behaviour of these routines you can replace the
     // calls to the originals with custom code.
     MH_CreateHook(reinterpret_cast<void*>(0x00428EE0), reinterpret_cast<void*>(&Detour00428EE0), reinterpret_cast<void**>(&s_orig00428EE0));
+    Log("Hook installed at 0x00428EE0\n");
     MH_CreateHook(reinterpret_cast<void*>(0x00495E1A), reinterpret_cast<void*>(&Detour00495E1A), reinterpret_cast<void**>(&s_orig00495E1A));
+    Log("Hook installed at 0x00495E1A\n");
     MH_CreateHook(reinterpret_cast<void*>(0x00495F5B), reinterpret_cast<void*>(&Detour00495F5B), reinterpret_cast<void**>(&s_orig00495F5B));
+    Log("Hook installed at 0x00495F5B\n");
     MH_CreateHook(reinterpret_cast<void*>(0x0040EA40), reinterpret_cast<void*>(&Detour0040EA40), reinterpret_cast<void**>(&s_orig0040EA40));
+    Log("Hook installed at 0x0040EA40\n");
     MH_CreateHook(reinterpret_cast<void*>(0x00492EFF), reinterpret_cast<void*>(&Detour00492EFF), reinterpret_cast<void**>(&s_orig00492EFF));
+    Log("Hook installed at 0x00492EFF\n");
     MH_CreateHook(reinterpret_cast<void*>(0x00495AE4), reinterpret_cast<void*>(&Detour00495AE4), reinterpret_cast<void**>(&s_orig00495AE4));
+    Log("Hook installed at 0x00495AE4\n");
     // Hook RestoreSelectedGDIObject at 0x00495DEB.
     MH_CreateHook(reinterpret_cast<void*>(0x00495DEB), reinterpret_cast<void*>(&Detour00495DEB), reinterpret_cast<void**>(&s_orig00495DEB));
+    Log("Hook installed at 0x00495DEB\n");
     // Hook ExtractAndProcessFontMetrics at 0x00486730.
     MH_CreateHook(reinterpret_cast<void*>(0x00486730), reinterpret_cast<void*>(&Detour00486730), reinterpret_cast<void**>(&s_orig00486730));
+    Log("Hook installed at 0x00486730\n");
     // Hook MeasureStringDimensions at 0x00429170.
     MH_CreateHook(reinterpret_cast<void*>(0x00429170), reinterpret_cast<void*>(&Detour00429170), reinterpret_cast<void**>(&s_orig00429170));
+    Log("Hook installed at 0x00429170\n");
     // Install hooks for GDI functions.  These hooks allow us to
     // intercept calls to CreateCompatibleDC, CreateFontA, etc. and
     // replace them with OpenGL-aware implementations.  The function
@@ -271,4 +287,5 @@ void InstallHooks() {
     // individual hooks by passing the target address instead of
     // MH_ALL_HOOKS.
     MH_EnableHook(MH_ALL_HOOKS);
+    Log("All hooks enabled\n");
 }

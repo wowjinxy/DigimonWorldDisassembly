@@ -10,6 +10,7 @@
 #include <cstring>
 #include "opengl_utils.h"
 #include "d3d8_gl_bridge.h"
+#include "logger.h"
 
 // Apply an in‑memory patch to bypass the CD check.  The patch data
 // and offsets were extracted from the original project.  On success
@@ -34,8 +35,7 @@ static void ApplyNoCD() {
         if (VirtualProtect(address, patch.size, PAGE_EXECUTE_READWRITE, &oldProtect)) {
             std::memcpy(address, patch.data, patch.size);
             VirtualProtect(address, patch.size, oldProtect, &oldProtect);
-            // Optionally log the patch application via debug output.
-            // OutputDebugStringA("Applied NoCD patch\n");
+            Log("Applied NoCD patch at offset 0x%06lX\n", patch.offset);
         }
     }
 }
@@ -48,7 +48,7 @@ void InstallHooks();
 // directive above.  It simply allocates the bridge object and returns it
 // to the caller.
 extern "C" __declspec(dllexport) IDirect3D8* WINAPI Direct3DCreate8(UINT /*sdkVersion*/) {
-    OutputDebugStringA("Direct3DCreate8 called – OpenGL backend active\n");
+    Log("Direct3DCreate8 called – OpenGL backend active\n");
     return new IDirect3D8();
 }
 
@@ -64,17 +64,24 @@ extern "C" __declspec(dllexport) IDirect3D8* WINAPI Direct3DCreate8(UINT /*sdkVe
 BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
     case DLL_PROCESS_ATTACH:
+        InitLogger();
+        Log("DLL_PROCESS_ATTACH\n");
         // Initialize MinHook
         if (MH_Initialize() != MH_OK) {
+            Log("Failed to initialize MinHook\n");
             return FALSE;
         }
         InstallHooks();
+        Log("Hooks installed\n");
         ApplyNoCD();
+        Log("NoCD patch applied\n");
         break;
     case DLL_PROCESS_DETACH:
         MH_DisableHook(MH_ALL_HOOKS);
         MH_Uninitialize();
         ShutdownOpenGL();
+        Log("DLL_PROCESS_DETACH\n");
+        ShutdownLogger();
         break;
     }
     return TRUE;
