@@ -215,7 +215,17 @@ HRESULT IDirect3DDevice8::Clear(DWORD Count, const D3DRECT* pRects, DWORD Flags,
 }
 
 HRESULT IDirect3DDevice8::Present(const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion) {
-    PresentFrame();
+    OutputDebugStringA("Present called - starting\n");
+
+    try {
+        PresentFrame();
+        OutputDebugStringA("Present called - PresentFrame completed\n");
+    }
+    catch (...) {
+        OutputDebugStringA("Present called - PresentFrame crashed\n");
+    }
+
+    OutputDebugStringA("Present called - returning S_OK\n");
     return S_OK;
 }
 
