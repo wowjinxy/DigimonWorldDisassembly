@@ -11,6 +11,15 @@
 #include "opengl_utils.h"
 #include "d3d8_gl_bridge.h"
 
+// Store the module handle for potential future use.
+static HINSTANCE g_hModule = nullptr;
+
+// Forward declaration for InstallHooks function
+void InstallHooks();
+
+// Forward declaration for the initialization thread.
+static DWORD WINAPI InitializationThread(LPVOID);
+
 // Apply an in‑memory patch to bypass the CD check.  The patch data
 // and offsets were extracted from the original project.  On success
 // this routine writes a few bytes to specific offsets relative to
@@ -40,8 +49,14 @@ static void ApplyNoCD() {
     }
 }
 
-// Forward declaration for InstallHooks function
-void InstallHooks();
+// Perform initialization work once the DLL is fully loaded.
+static DWORD WINAPI InitializationThread(LPVOID) {
+    if (MH_Initialize() == MH_OK) {
+        InstallHooks();
+        ApplyNoCD();
+    }
+    return 0;
+}
 
 // Exported Direct3DCreate8 replacement.  This function is exported from
 // our DLL under both the decorated and undecorated names via the linker
@@ -58,18 +73,21 @@ extern "C" __declspec(dllexport) IDirect3D8* WINAPI Direct3DCreate8(UINT /*sdkVe
 // game's import table.
 #pragma comment(linker, "/export:Direct3DCreate8=_Direct3DCreate8@4")
 
-// DLL entry point.  On process attach we install hooks and apply the
-// No‑CD patch.  On detach we remove hooks.  The original Direct3D8
-// library is no longer loaded.
+// DLL entry point.  On process attach we spin up a worker thread to
+// perform initialization after the loader lock is released.  On detach
+// we remove hooks and clean up.  The original Direct3D8 library is no
+// longer loaded.
 BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
     case DLL_PROCESS_ATTACH:
-        // Initialize MinHook
-        if (MH_Initialize() != MH_OK) {
-            return FALSE;
+        g_hModule = hinstDLL;
+        DisableThreadLibraryCalls(hinstDLL);
+        {
+            HANDLE thread = CreateThread(nullptr, 0, InitializationThread, nullptr, 0, nullptr);
+            if (thread) {
+                CloseHandle(thread);
+            }
         }
-        InstallHooks();
-        ApplyNoCD();
         break;
     case DLL_PROCESS_DETACH:
         MH_DisableHook(MH_ALL_HOOKS);
