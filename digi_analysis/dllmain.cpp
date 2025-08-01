@@ -8,6 +8,7 @@
 #include "MinHook.h"
 #include <cstdint>
 #include <cstring>
+#include <cstdio>
 #include "opengl_utils.h"
 #include "d3d8_gl_bridge.h"
 
@@ -17,7 +18,7 @@
 // the module base to disable the CD verification.  If the patch
 // cannot be applied nothing else is done.
 static void ApplyNoCD() {
-    uintptr_t baseAddress = reinterpret_cast<uintptr_t>(GetModuleHandleA(NULL));
+    uintptr_t baseAddress = reinterpret_cast<uintptr_t>(GetModuleHandle(nullptr));
     struct Patch {
         uintptr_t offset;
         unsigned char data[8];
@@ -30,12 +31,13 @@ static void ApplyNoCD() {
     };
     for (const auto& patch : patches) {
         void* address = reinterpret_cast<void*>(baseAddress + patch.offset);
+        char buf[64];
+        std::snprintf(buf, sizeof(buf), "NoCD patch @ %p\n", address);
+        OutputDebugStringA(buf);
         DWORD oldProtect;
         if (VirtualProtect(address, patch.size, PAGE_EXECUTE_READWRITE, &oldProtect)) {
             std::memcpy(address, patch.data, patch.size);
             VirtualProtect(address, patch.size, oldProtect, &oldProtect);
-            // Optionally log the patch application via debug output.
-            // OutputDebugStringA("Applied NoCD patch\n");
         }
     }
 }
