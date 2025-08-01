@@ -19,6 +19,7 @@
 #include "strings.h"
 #include "functions.h"
 #include "hooks.h"
+#include "debug_log.h"
 
 // Forward declarations for the reconstructed functions.  These
 // declarations match those in functions.h but are repeated here to
@@ -42,6 +43,7 @@ static std::wstring ToWString(const std::string &s) {
 // The WinMain entry point typical of Win32 GUI applications.
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow) {
+    InitDebugLog();
     // Install our hooks before doing anything else.  In a DLL build
     // this would typically be done from DllMain on process attach.
     InstallHooks();
@@ -76,5 +78,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     std::wstring wmsg = ToWString(message);
     MessageBoxW(NULL, wmsg.c_str(), L"Digi EXE Reconstruction Demo", MB_OK);
+    ShutdownDebugLog();
     return 0;
 }

@@ -8,8 +8,19 @@
 #include "MinHook.h"
 #include <cstdint>
 #include <cstring>
+#include <cstdio>
 #include "opengl_utils.h"
 #include "d3d8_gl_bridge.h"
+#include "debug_log.h"
+
+// Store the module handle for potential future use.
+static HINSTANCE g_hModule = nullptr;
+
+// Forward declaration for InstallHooks function
+void InstallHooks();
+
+// Forward declaration for the initialization thread.
+static DWORD WINAPI InitializationThread(LPVOID);
 
 // Apply an in‑memory patch to bypass the CD check.  The patch data
 // and offsets were extracted from the original project.  On success
@@ -17,7 +28,7 @@
 // the module base to disable the CD verification.  If the patch
 // cannot be applied nothing else is done.
 static void ApplyNoCD() {
-    uintptr_t baseAddress = reinterpret_cast<uintptr_t>(GetModuleHandleA(NULL));
+    uintptr_t baseAddress = reinterpret_cast<uintptr_t>(GetModuleHandle(nullptr));
     struct Patch {
         uintptr_t offset;
         unsigned char data[8];
@@ -30,25 +41,33 @@ static void ApplyNoCD() {
     };
     for (const auto& patch : patches) {
         void* address = reinterpret_cast<void*>(baseAddress + patch.offset);
+        char buf[64];
+        std::snprintf(buf, sizeof(buf), "NoCD patch @ %p\n", address);
+        DebugLog("%s", buf);
         DWORD oldProtect;
         if (VirtualProtect(address, patch.size, PAGE_EXECUTE_READWRITE, &oldProtect)) {
             std::memcpy(address, patch.data, patch.size);
             VirtualProtect(address, patch.size, oldProtect, &oldProtect);
-            // Optionally log the patch application via debug output.
-            // OutputDebugStringA("Applied NoCD patch\n");
         }
     }
 }
 
-// Forward declaration for InstallHooks function
-void InstallHooks();
+// Perform initialization work once the DLL is fully loaded.
+static DWORD WINAPI InitializationThread(LPVOID) {
+    InitDebugLog();
+    if (MH_Initialize() == MH_OK) {
+        InstallHooks();
+        ApplyNoCD();
+    }
+    return 0;
+}
 
 // Exported Direct3DCreate8 replacement.  This function is exported from
 // our DLL under both the decorated and undecorated names via the linker
 // directive above.  It simply allocates the bridge object and returns it
 // to the caller.
 extern "C" __declspec(dllexport) IDirect3D8* WINAPI Direct3DCreate8(UINT /*sdkVersion*/) {
-    OutputDebugStringA("Direct3DCreate8 called – OpenGL backend active\n");
+    DebugLog("Direct3DCreate8 called – OpenGL backend active\n");
     return new IDirect3D8();
 }
 
@@ -58,23 +77,27 @@ extern "C" __declspec(dllexport) IDirect3D8* WINAPI Direct3DCreate8(UINT /*sdkVe
 // game's import table.
 #pragma comment(linker, "/export:Direct3DCreate8=_Direct3DCreate8@4")
 
-// DLL entry point.  On process attach we install hooks and apply the
-// No‑CD patch.  On detach we remove hooks.  The original Direct3D8
-// library is no longer loaded.
+// DLL entry point.  On process attach we spin up a worker thread to
+// perform initialization after the loader lock is released.  On detach
+// we remove hooks and clean up.  The original Direct3D8 library is no
+// longer loaded.
 BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
     case DLL_PROCESS_ATTACH:
-        // Initialize MinHook
-        if (MH_Initialize() != MH_OK) {
-            return FALSE;
+        g_hModule = hinstDLL;
+        DisableThreadLibraryCalls(hinstDLL);
+        {
+            HANDLE thread = CreateThread(nullptr, 0, InitializationThread, nullptr, 0, nullptr);
+            if (thread) {
+                CloseHandle(thread);
+            }
         }
-        InstallHooks();
-        ApplyNoCD();
         break;
     case DLL_PROCESS_DETACH:
         MH_DisableHook(MH_ALL_HOOKS);
         MH_Uninitialize();
         ShutdownOpenGL();
+        ShutdownDebugLog();
         break;
     }
     return TRUE;

@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <cstdint>
 #include <cstdint>
+#include "debug_log.h"
 
 // Simulated global variables corresponding to locations in the
 // original binary.  The addresses 0x4F4C78 and 0x4F4C7C appear to be
@@ -58,10 +59,10 @@ namespace {
 }
 
 // Inline‑assembly implementation of CallStubA.  It ignores the
-// parameter value and simply sends a fixed string to the debugger via
-// OutputDebugStringA.  The function cleans up the single integer
-// argument on return.  When you know the real behaviour at 0x4A7324
-// you can replace this with an accurate re‑implementation.
+// parameter value and simply sends a fixed string to the shared logger.
+// The function cleans up the single integer argument on return.  When
+// you know the real behaviour at 0x4A7324 you can replace this with an
+// accurate re‑implementation.
 extern "C" __declspec(naked) void __stdcall CallStubA(int /*param*/) {
     __asm {
         // Establish a standard stack frame for clarity.  This is not
@@ -70,10 +71,10 @@ extern "C" __declspec(naked) void __stdcall CallStubA(int /*param*/) {
         push ebp
         mov ebp, esp
         // Push the address of our message onto the stack and call
-        // OutputDebugStringA.  Because OutputDebugStringA uses the
-        // stdcall convention the callee will pop its own argument.
+        // Log the message using the shared DebugLog helper.
         push offset kMsgStubA
-        call OutputDebugStringA
+        call DebugLog
+        add esp, 4
         // Clean up the stack frame and return, removing the one
         // integer argument passed to this function (4 bytes).
         mov esp, ebp
@@ -91,7 +92,8 @@ extern "C" __declspec(naked) void __stdcall CallStubB(void) {
         push ebp
         mov ebp, esp
         push offset kMsgStubB
-        call OutputDebugStringA
+        call DebugLog
+        add esp, 4
         mov esp, ebp
         pop ebp
         ret
@@ -129,18 +131,18 @@ static void __stdcall internal_sub_004A1F8A() {
         std::snprintf(buf, sizeof(buf),
                       "sub_004A1F8A: lookup results = %d, %d\n",
                       result1, result2);
-        OutputDebugStringA(buf);
+        DebugLog("%s", buf);
         // Call our inline‑assembly stubs.  The original function
         // pushes 2 before calling the first routine.  We preserve
         // that behaviour here.
         CallStubA(2);
         CallStubB();
-        OutputDebugStringA("sub_004A1F8A: initialisation complete\n");
+        DebugLog("sub_004A1F8A: initialisation complete\n");
     } else {
         // Subsequent calls simply log that the routine has already
         // executed.  This mirrors the fact that the real code does
         // nothing on subsequent invocations once its state is set up.
-        OutputDebugStringA("sub_004A1F8A: already initialised\n");
+        DebugLog("sub_004A1F8A: already initialised\n");
     }
 }
 

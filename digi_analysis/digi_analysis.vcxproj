@@ -87,6 +87,7 @@
     <ClCompile Include="sub_004A1F8A.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="debug_log.cpp" />
     <ClCompile Include="gdi_hooks.cpp" />
     <ClCompile Include="text_renderer.cpp" />
     <!-- Compile the MinHook sources as part of this project. -->
@@ -106,6 +107,7 @@
     <ClInclude Include="hooks.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="text_renderer.h" />
+    <ClInclude Include="debug_log.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sub_004A1F8A.asm" />

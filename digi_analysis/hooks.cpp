@@ -10,8 +10,10 @@
 #include <windows.h>
 #include <cstdint>
 #include <vector>
+#include <cstdio>
 #include "functions.h"
 #include "text_renderer.h"
+#include "debug_log.h"
 
 // Forward declaration of our stub for 0x004A1F8A.  Defined in
 // sub_004A1F8A.cpp.  The calling convention is __stdcall to match
@@ -115,20 +117,20 @@ static OrigFunc00429170 s_orig00429170 = nullptr;
 // behaviour to OpenGL.  For now we leave the behaviour unchanged.
 
 static void __cdecl Detour00428EE0(int* fontMetricsArray) {
-    OutputDebugStringA("Detour00428EE0: ProcessFontsAndMetrics called\n");
+    DebugLog("Detour00428EE0: ProcessFontsAndMetrics called\n");
     if (s_orig00428EE0) {
         s_orig00428EE0(fontMetricsArray);
     }
 }
 
 static int __fastcall Detour00495E1A(void* _this, void* /*not used*/, int* param1) {
-    OutputDebugStringA("Detour00495E1A: CreateTextRenderSurface called\n");
+    DebugLog("Detour00495E1A: CreateTextRenderSurface called\n");
     return s_orig00495E1A ? s_orig00495E1A(_this, param1) : -1;
 }
 
 static unsigned int* __fastcall Detour00495F5B(void* _this, void* /*not used*/, unsigned int* a1, unsigned int* a2, unsigned int a3,
                                         int* a4, UINT a5, unsigned int a6, const wchar_t* a7) {
-    OutputDebugStringA("Detour00495F5B: RenderText called\n");
+    DebugLog("Detour00495F5B: RenderText called\n");
     if (!a7) {
         return a1;
     }
@@ -142,34 +144,34 @@ static unsigned int* __fastcall Detour00495F5B(void* _this, void* /*not used*/, 
 }
 
 static int __fastcall Detour0040EA40(void* _this, void* /*not used*/, int param) {
-    OutputDebugStringA("Detour0040EA40: CDWWnd::PreCreateWindow called\n");
+    DebugLog("Detour0040EA40: CDWWnd::PreCreateWindow called\n");
     return s_orig0040EA40 ? s_orig0040EA40(_this, param) : 0;
 }
 
 static int __fastcall Detour00492EFF(void* _this, void* /*not used*/, int* param1, LOGFONTA* param2) {
-    OutputDebugStringA("Detour00492EFF: TextRenderState::Initialize called\n");
+    DebugLog("Detour00492EFF: TextRenderState::Initialize called\n");
     return s_orig00492EFF ? s_orig00492EFF(_this, param1, param2) : -1;
 }
 
 static void __fastcall Detour00495AE4(int param1, void* unused) {
-    OutputDebugStringA("Detour00495AE4: FreeTextSurfaceResources called\n");
+    DebugLog("Detour00495AE4: FreeTextSurfaceResources called\n");
     if (s_orig00495AE4) {
         s_orig00495AE4(param1, unused);
     }
 }
 
 static int __fastcall Detour00495DEB(int param1, void* unused) {
-    OutputDebugStringA("Detour00495DEB: RestoreSelectedGDIObject called\n");
+    DebugLog("Detour00495DEB: RestoreSelectedGDIObject called\n");
     return s_orig00495DEB ? s_orig00495DEB(param1, unused) : 0;
 }
 
 static int Detour00486730(int* fontMetricsArray, HANDLE currentHandle, void** fontMetricsArrayPtr) {
-    OutputDebugStringA("Detour00486730: ExtractAndProcessFontMetrics called\n");
+    DebugLog("Detour00486730: ExtractAndProcessFontMetrics called\n");
     return s_orig00486730 ? s_orig00486730(fontMetricsArray, currentHandle, fontMetricsArrayPtr) : -1;
 }
 
 static void __fastcall Detour00429170(void* _this, void* /*not used*/, unsigned int param1, int param2, unsigned int param3) {
-    OutputDebugStringA("Detour00429170: MeasureStringDimensions called\n");
+    DebugLog("Detour00429170: MeasureStringDimensions called\n");
     if (s_orig00429170) {
         s_orig00429170(_this, param1, param2, param3);
     }
@@ -231,17 +233,33 @@ void InstallHooks() {
     if (status != MH_OK && status != MH_ERROR_ALREADY_INITIALIZED) {
         return;
     }
+    uintptr_t base = reinterpret_cast<uintptr_t>(GetModuleHandle(nullptr));
+    auto logAddr = [](const char* name, uintptr_t addr) {
+        char buf[64];
+        std::snprintf(buf, sizeof(buf), "%s -> %p\n", name, reinterpret_cast<void*>(addr));
+        DebugLog("%s", buf);
+    };
     // Create a hook for 0x401000.  On success the original pointer
     // will be stored in s_orig401000.
-    MH_CreateHook(reinterpret_cast<void*>(0x401000), reinterpret_cast<void*>(&Detour401000), reinterpret_cast<void**>(&s_orig401000));
+    uintptr_t addr401000 = base + 0x001000;
+    logAddr("0x401000", addr401000);
+    MH_CreateHook(reinterpret_cast<void*>(addr401000), reinterpret_cast<void*>(&Detour401000), reinterpret_cast<void**>(&s_orig401000));
     // Create a hook for 0x401020 as well.  This allows you to intercept
     // calls to the second sine lookup routine.
-    MH_CreateHook(reinterpret_cast<void*>(0x401020), reinterpret_cast<void*>(&Detour401020), reinterpret_cast<void**>(&s_orig401020));
+    uintptr_t addr401020 = base + 0x001020;
+    logAddr("0x401020", addr401020);
+    MH_CreateHook(reinterpret_cast<void*>(addr401020), reinterpret_cast<void*>(&Detour401020), reinterpret_cast<void**>(&s_orig401020));
     // Create hooks for the simple wrapper functions at 0x401040 and 0x401050.
-    MH_CreateHook(reinterpret_cast<void*>(0x401040), reinterpret_cast<void*>(&Detour401040), reinterpret_cast<void**>(&s_orig401040));
-    MH_CreateHook(reinterpret_cast<void*>(0x401050), reinterpret_cast<void*>(&Detour401050), reinterpret_cast<void**>(&s_orig401050));
+    uintptr_t addr401040 = base + 0x001040;
+    logAddr("0x401040", addr401040);
+    MH_CreateHook(reinterpret_cast<void*>(addr401040), reinterpret_cast<void*>(&Detour401040), reinterpret_cast<void**>(&s_orig401040));
+    uintptr_t addr401050 = base + 0x001050;
+    logAddr("0x401050", addr401050);
+    MH_CreateHook(reinterpret_cast<void*>(addr401050), reinterpret_cast<void*>(&Detour401050), reinterpret_cast<void**>(&s_orig401050));
     // Create a hook for the new function at 0x004A1F8A.
-    MH_CreateHook(reinterpret_cast<void*>(0x004A1F8A), reinterpret_cast<void*>(&Detour004A1F8A), reinterpret_cast<void**>(&s_orig004A1F8A));
+    uintptr_t addr004A1F8A = base + 0x00A1F8A;
+    logAddr("0x004A1F8A", addr004A1F8A);
+    MH_CreateHook(reinterpret_cast<void*>(addr004A1F8A), reinterpret_cast<void*>(&Detour004A1F8A), reinterpret_cast<void**>(&s_orig004A1F8A));
     // ---------------------------------------------------------------------
     // Install hooks for text and font processing functions.  These
     // addresses are taken from the disassembly provided by the user.  Each
@@ -249,24 +267,46 @@ void InstallHooks() {
     // through the s_origXXXX function pointers defined above.  Once you
     // understand the behaviour of these routines you can replace the
     // calls to the originals with custom code.
-    MH_CreateHook(reinterpret_cast<void*>(0x00428EE0), reinterpret_cast<void*>(&Detour00428EE0), reinterpret_cast<void**>(&s_orig00428EE0));
-    MH_CreateHook(reinterpret_cast<void*>(0x00495E1A), reinterpret_cast<void*>(&Detour00495E1A), reinterpret_cast<void**>(&s_orig00495E1A));
-    MH_CreateHook(reinterpret_cast<void*>(0x00495F5B), reinterpret_cast<void*>(&Detour00495F5B), reinterpret_cast<void**>(&s_orig00495F5B));
-    MH_CreateHook(reinterpret_cast<void*>(0x0040EA40), reinterpret_cast<void*>(&Detour0040EA40), reinterpret_cast<void**>(&s_orig0040EA40));
-    MH_CreateHook(reinterpret_cast<void*>(0x00492EFF), reinterpret_cast<void*>(&Detour00492EFF), reinterpret_cast<void**>(&s_orig00492EFF));
-    MH_CreateHook(reinterpret_cast<void*>(0x00495AE4), reinterpret_cast<void*>(&Detour00495AE4), reinterpret_cast<void**>(&s_orig00495AE4));
+    uintptr_t addr00428EE0 = base + 0x0028EE0;
+    logAddr("0x00428EE0", addr00428EE0);
+    MH_CreateHook(reinterpret_cast<void*>(addr00428EE0), reinterpret_cast<void*>(&Detour00428EE0), reinterpret_cast<void**>(&s_orig00428EE0));
+    uintptr_t addr00495E1A = base + 0x0095E1A;
+    logAddr("0x00495E1A", addr00495E1A);
+    MH_CreateHook(reinterpret_cast<void*>(addr00495E1A), reinterpret_cast<void*>(&Detour00495E1A), reinterpret_cast<void**>(&s_orig00495E1A));
+    uintptr_t addr00495F5B = base + 0x0095F5B;
+    logAddr("0x00495F5B", addr00495F5B);
+    MH_CreateHook(reinterpret_cast<void*>(addr00495F5B), reinterpret_cast<void*>(&Detour00495F5B), reinterpret_cast<void**>(&s_orig00495F5B));
+    uintptr_t addr0040EA40 = base + 0x000EA40;
+    logAddr("0x0040EA40", addr0040EA40);
+    MH_CreateHook(reinterpret_cast<void*>(addr0040EA40), reinterpret_cast<void*>(&Detour0040EA40), reinterpret_cast<void**>(&s_orig0040EA40));
+    uintptr_t addr00492EFF = base + 0x0092EFF;
+    logAddr("0x00492EFF", addr00492EFF);
+    MH_CreateHook(reinterpret_cast<void*>(addr00492EFF), reinterpret_cast<void*>(&Detour00492EFF), reinterpret_cast<void**>(&s_orig00492EFF));
+    uintptr_t addr00495AE4 = base + 0x0095AE4;
+    logAddr("0x00495AE4", addr00495AE4);
+    MH_CreateHook(reinterpret_cast<void*>(addr00495AE4), reinterpret_cast<void*>(&Detour00495AE4), reinterpret_cast<void**>(&s_orig00495AE4));
     // Hook RestoreSelectedGDIObject at 0x00495DEB.
-    MH_CreateHook(reinterpret_cast<void*>(0x00495DEB), reinterpret_cast<void*>(&Detour00495DEB), reinterpret_cast<void**>(&s_orig00495DEB));
+    uintptr_t addr00495DEB = base + 0x0095DEB;
+    logAddr("0x00495DEB", addr00495DEB);
+    MH_CreateHook(reinterpret_cast<void*>(addr00495DEB), reinterpret_cast<void*>(&Detour00495DEB), reinterpret_cast<void**>(&s_orig00495DEB));
     // Hook ExtractAndProcessFontMetrics at 0x00486730.
-    MH_CreateHook(reinterpret_cast<void*>(0x00486730), reinterpret_cast<void*>(&Detour00486730), reinterpret_cast<void**>(&s_orig00486730));
+    uintptr_t addr00486730 = base + 0x0086730;
+    logAddr("0x00486730", addr00486730);
+    MH_CreateHook(reinterpret_cast<void*>(addr00486730), reinterpret_cast<void*>(&Detour00486730), reinterpret_cast<void**>(&s_orig00486730));
     // Hook MeasureStringDimensions at 0x00429170.
-    MH_CreateHook(reinterpret_cast<void*>(0x00429170), reinterpret_cast<void*>(&Detour00429170), reinterpret_cast<void**>(&s_orig00429170));
+    uintptr_t addr00429170 = base + 0x0029170;
+    logAddr("0x00429170", addr00429170);
+    MH_CreateHook(reinterpret_cast<void*>(addr00429170), reinterpret_cast<void*>(&Detour00429170), reinterpret_cast<void**>(&s_orig00429170));
     // Install hooks for GDI functions.  These hooks allow us to
     // intercept calls to CreateCompatibleDC, CreateFontA, etc. and
     // replace them with OpenGL-aware implementations.  The function
     // is defined in gdi_hooks.cpp.
     extern void InstallGDIHooks();
     InstallGDIHooks();
+    if (IsDebuggerPresent()) {
+        DebugLog("Verify hook addresses and resume to enable hooks\n");
+        DebugBreak();
+    }
     // Enable all hooks at once.  If needed you can enable/disable
     // individual hooks by passing the target address instead of
     // MH_ALL_HOOKS.
