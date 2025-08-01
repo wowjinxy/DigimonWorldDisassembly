@@ -39,6 +39,9 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="debug_log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="gdi_hooks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -84,6 +87,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="opengl_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="debug_log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

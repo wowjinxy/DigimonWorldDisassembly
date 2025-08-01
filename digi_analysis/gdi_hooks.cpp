@@ -14,6 +14,7 @@
 #include <unordered_map>
 
 #include "text_renderer.h"
+#include "debug_log.h"
 
 // Forward declarations of the original functions.  We store these in
 // static variables so that the detours can call through after doing
@@ -52,12 +53,11 @@ static PFN_GetTextMetricsA           orig_GetTextMetricsA           = nullptr;
 static PFN_SetTextColor              orig_SetTextColor              = nullptr;
 static PFN_TextOutA                  orig_TextOutA                  = nullptr;
 
-// Helper to log a message to the debugger.  This avoids duplicating
-// the OutputDebugStringA call in every detour.
+// Helper to log a message. This avoids duplicating the DebugLog call in every detour.
 static void LogCall(const char* funcName) {
     char buf[128];
     std::snprintf(buf, sizeof(buf), "[GDI hook] %s called\n", funcName);
-    OutputDebugStringA(buf);
+    DebugLog("%s", buf);
 }
 
 struct DCState {

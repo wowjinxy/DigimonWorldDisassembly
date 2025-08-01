@@ -13,6 +13,7 @@
 #include <cstdio>
 #include "functions.h"
 #include "text_renderer.h"
+#include "debug_log.h"
 
 // Forward declaration of our stub for 0x004A1F8A.  Defined in
 // sub_004A1F8A.cpp.  The calling convention is __stdcall to match
@@ -116,20 +117,20 @@ static OrigFunc00429170 s_orig00429170 = nullptr;
 // behaviour to OpenGL.  For now we leave the behaviour unchanged.
 
 static void __cdecl Detour00428EE0(int* fontMetricsArray) {
-    OutputDebugStringA("Detour00428EE0: ProcessFontsAndMetrics called\n");
+    DebugLog("Detour00428EE0: ProcessFontsAndMetrics called\n");
     if (s_orig00428EE0) {
         s_orig00428EE0(fontMetricsArray);
     }
 }
 
 static int __fastcall Detour00495E1A(void* _this, void* /*not used*/, int* param1) {
-    OutputDebugStringA("Detour00495E1A: CreateTextRenderSurface called\n");
+    DebugLog("Detour00495E1A: CreateTextRenderSurface called\n");
     return s_orig00495E1A ? s_orig00495E1A(_this, param1) : -1;
 }
 
 static unsigned int* __fastcall Detour00495F5B(void* _this, void* /*not used*/, unsigned int* a1, unsigned int* a2, unsigned int a3,
                                         int* a4, UINT a5, unsigned int a6, const wchar_t* a7) {
-    OutputDebugStringA("Detour00495F5B: RenderText called\n");
+    DebugLog("Detour00495F5B: RenderText called\n");
     if (!a7) {
         return a1;
     }
@@ -143,34 +144,34 @@ static unsigned int* __fastcall Detour00495F5B(void* _this, void* /*not used*/, 
 }
 
 static int __fastcall Detour0040EA40(void* _this, void* /*not used*/, int param) {
-    OutputDebugStringA("Detour0040EA40: CDWWnd::PreCreateWindow called\n");
+    DebugLog("Detour0040EA40: CDWWnd::PreCreateWindow called\n");
     return s_orig0040EA40 ? s_orig0040EA40(_this, param) : 0;
 }
 
 static int __fastcall Detour00492EFF(void* _this, void* /*not used*/, int* param1, LOGFONTA* param2) {
-    OutputDebugStringA("Detour00492EFF: TextRenderState::Initialize called\n");
+    DebugLog("Detour00492EFF: TextRenderState::Initialize called\n");
     return s_orig00492EFF ? s_orig00492EFF(_this, param1, param2) : -1;
 }
 
 static void __fastcall Detour00495AE4(int param1, void* unused) {
-    OutputDebugStringA("Detour00495AE4: FreeTextSurfaceResources called\n");
+    DebugLog("Detour00495AE4: FreeTextSurfaceResources called\n");
     if (s_orig00495AE4) {
         s_orig00495AE4(param1, unused);
     }
 }
 
 static int __fastcall Detour00495DEB(int param1, void* unused) {
-    OutputDebugStringA("Detour00495DEB: RestoreSelectedGDIObject called\n");
+    DebugLog("Detour00495DEB: RestoreSelectedGDIObject called\n");
     return s_orig00495DEB ? s_orig00495DEB(param1, unused) : 0;
 }
 
 static int Detour00486730(int* fontMetricsArray, HANDLE currentHandle, void** fontMetricsArrayPtr) {
-    OutputDebugStringA("Detour00486730: ExtractAndProcessFontMetrics called\n");
+    DebugLog("Detour00486730: ExtractAndProcessFontMetrics called\n");
     return s_orig00486730 ? s_orig00486730(fontMetricsArray, currentHandle, fontMetricsArrayPtr) : -1;
 }
 
 static void __fastcall Detour00429170(void* _this, void* /*not used*/, unsigned int param1, int param2, unsigned int param3) {
-    OutputDebugStringA("Detour00429170: MeasureStringDimensions called\n");
+    DebugLog("Detour00429170: MeasureStringDimensions called\n");
     if (s_orig00429170) {
         s_orig00429170(_this, param1, param2, param3);
     }
@@ -236,7 +237,7 @@ void InstallHooks() {
     auto logAddr = [](const char* name, uintptr_t addr) {
         char buf[64];
         std::snprintf(buf, sizeof(buf), "%s -> %p\n", name, reinterpret_cast<void*>(addr));
-        OutputDebugStringA(buf);
+        DebugLog("%s", buf);
     };
     // Create a hook for 0x401000.  On success the original pointer
     // will be stored in s_orig401000.
@@ -303,7 +304,7 @@ void InstallHooks() {
     extern void InstallGDIHooks();
     InstallGDIHooks();
     if (IsDebuggerPresent()) {
-        OutputDebugStringA("Verify hook addresses and resume to enable hooks\n");
+        DebugLog("Verify hook addresses and resume to enable hooks\n");
         DebugBreak();
     }
     // Enable all hooks at once.  If needed you can enable/disable

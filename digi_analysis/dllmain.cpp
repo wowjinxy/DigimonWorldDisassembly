@@ -11,6 +11,7 @@
 #include <cstdio>
 #include "opengl_utils.h"
 #include "d3d8_gl_bridge.h"
+#include "debug_log.h"
 
 // Store the module handle for potential future use.
 static HINSTANCE g_hModule = nullptr;
@@ -42,7 +43,7 @@ static void ApplyNoCD() {
         void* address = reinterpret_cast<void*>(baseAddress + patch.offset);
         char buf[64];
         std::snprintf(buf, sizeof(buf), "NoCD patch @ %p\n", address);
-        OutputDebugStringA(buf);
+        DebugLog("%s", buf);
         DWORD oldProtect;
         if (VirtualProtect(address, patch.size, PAGE_EXECUTE_READWRITE, &oldProtect)) {
             std::memcpy(address, patch.data, patch.size);
@@ -53,6 +54,7 @@ static void ApplyNoCD() {
 
 // Perform initialization work once the DLL is fully loaded.
 static DWORD WINAPI InitializationThread(LPVOID) {
+    InitDebugLog();
     if (MH_Initialize() == MH_OK) {
         InstallHooks();
         ApplyNoCD();
@@ -65,7 +67,7 @@ static DWORD WINAPI InitializationThread(LPVOID) {
 // directive above.  It simply allocates the bridge object and returns it
 // to the caller.
 extern "C" __declspec(dllexport) IDirect3D8* WINAPI Direct3DCreate8(UINT /*sdkVersion*/) {
-    OutputDebugStringA("Direct3DCreate8 called – OpenGL backend active\n");
+    DebugLog("Direct3DCreate8 called – OpenGL backend active\n");
     return new IDirect3D8();
 }
 
@@ -95,6 +97,7 @@ BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
         MH_DisableHook(MH_ALL_HOOKS);
         MH_Uninitialize();
         ShutdownOpenGL();
+        ShutdownDebugLog();
         break;
     }
     return TRUE;
